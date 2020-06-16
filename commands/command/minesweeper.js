@@ -4,7 +4,13 @@ const minesweeperDiscord = require('../../utils/minesweeperDiscord');
 // exports
 module.exports = {
 	execute(message) {
-        const board = MinesweeperBoard.generate();
+        let board;
+        if (message.content.endsWith('medium')) {
+            board = MinesweeperBoard.generate('medium');
+        }
+        else {
+            board = MinesweeperBoard.generate();
+        }
         const genMessage = minesweeperDiscord.parseToMessage(board);
         message.channel.send(genMessage);
 	},
