@@ -1,0 +1,4 @@
+{
+    "inviteLink": "https://discordapp.com/api/oauth2/authorize?client_id=**set ID HERE **&scope=bot&permissions=** SET PERMISSIONS HERE **",
+    "token": "Bot Token goes here, also rename 'configdummy.json' to'config.json'"
+}
