@@ -3,6 +3,17 @@ const Discord = require('discord.js');
 const config = require('./config.json');
 const commandList = require('./commands/command');
 
+const app = require('express')();
+const http = require('http').createServer(app);
+const io = require('socket.io')(http);
+const { static } = require('express');
+const qdCache = require('qdcache');
+const boardClean = require('./utils/security/boardClean');
+const minesweeperBoard = require('./utils/minesweeper/minesweeperBoard');
+
+// start static distribution
+app.use(static('public'));
+
 // start client
 const client = new Discord.Client;
 
@@ -30,7 +41,49 @@ client.on('message', message => {
     }
 });
 
+// webpage routes
+app.get('/', (req, res) => {
+    res.sendFile(__dirname + '/public/index.html');
+});
+
+app.get('/mine', async (req, res) => {
+    const game = qdCache.get(req.query.h);
+    if (!game) {
+        res.sendFile(__dirname + '/public/index.html');
+        return;
+    }
+    res.sendFile(__dirname + '/public/mine.html');
+});
+
+io.of('/sp').on('connection', (socket) => {
+    socket.on('getBoard', (tag, fn) => {
+        const res = qdCache.get(tag);
+        const cleaned = boardClean.cleanToWeb(res.board);
+        fn(cleaned);
+    });
+    socket.on('boardClick', (x, y, tag, fn) => {
+        const res = qdCache.get(tag);
+        console.log(`x${x}y${y}`);
+        if (!res) {
+            return;
+        }
+        const{ board, state } = minesweeperBoard.clickCell(res.board, x, y);
+        res.board = board;
+        qdCache.set(tag, res);
+        const cleaned = boardClean.cleanToWeb(board);
+        if (state !== 'inProgress') {
+            qdCache.delete(tag);
+        }
+        fn(cleaned, state);
+    });
+});
+
 // everything after this point doesn't need to be touched normally
+
+http.listen(3000, () => {
+    console.log('listening on http://localhost:3000');
+});
+
 client.on('ready', () => {
 	console.log(`I'm up, and i'm part of ${client.guilds.cache.size} servers`);
 });

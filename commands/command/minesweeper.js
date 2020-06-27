@@ -1,6 +1,6 @@
 // imports
-const MinesweeperBoard = require('../../utils/minesweeperBoard');
-const minesweeperDiscord = require('../../utils/minesweeperDiscord');
+const MinesweeperBoard = require('../../utils/minesweeper/minesweeperBoard');
+const minesweeperDiscord = require('../../utils/minesweeper/minesweeperDiscord');
 // exports
 module.exports = {
 	execute(message) {

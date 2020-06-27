@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/minesweeper.css">
+    <title>Minesweeper Page</title>
+</head>
+
+<body>
+    <H1>Minesweeper</H1>
+    <table id=grid>
+    </table>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="/js/minesweeper.js"></script>
+    <script>
+        let publicBoard;
+        const params = new URLSearchParams(document.location.search.substring(1));
+        const tag = params.get('h');
+        console.log(tag);
+        const socket = io('/sp');
+        socket.emit('getBoard', tag, (board) => {
+            publicBoard = board;
+            generateGrid(board);
+        })
+    </script>
+    <script>
+        function generateGrid(board) {
+            grid.innerHTML = '';
+            for (let i = 0; i < board.length; i++) {
+                row = grid.insertRow(i);
+                for (let j = 0; j < board[i].length; j++) {
+                    cell = row.insertCell(j);
+                    if (board[i][j].revealed === true && board[i][j].mine === false){
+                        cell.innerHTML = board[i][j].minecount;
+                        cell.className='clicked';
+                    }
+                    else if (board[i][j].revealed === true && board[i][j].mine === true){
+                        cell.className = 'mine'
+                    }
+                }
+            };
+            enableClicks();
+        }
+        function enableClicks() {
+            $("#grid:has(td)").mouseup(function(event) {
+                const clickedCell = $(event.target).closest("td");
+
+                if (clickedCell[0].innerHTML == '') {
+                    switch (event.which) {
+                    case 1:
+                        console.log('left');
+                        console.log(clickedCell[0].parentNode.rowIndex, clickedCell[0].cellIndex);
+                        clickCell(clickedCell[0].parentNode.rowIndex, clickedCell[0].cellIndex)
+                        break;
+                    case 3:
+                        console.log('right');
+                        console.log(clickedCell[0].parentNode.rowIndex, clickedCell[0].cellIndex);
+                        break;
+                    default:
+                        console.log('null');
+                }
+                }
+                
+            });
+            $("#grid:has(td)").bind("contextmenu", function(e) {
+                return false;
+            })
+        }
+        function disableClicks() {
+            $("#grid:has(td)").off('mouseup');
+        }
+        function clickCell(x, y) {
+            disableClicks();
+            socket.emit('boardClick', x, y, tag, (board, state) => {
+                console.log(state);
+                if (state === 'inProgress') {
+                    generateGrid(board);
+                }
+                else {
+                    generateGrid(board);
+                    disableClicks();
+                }
+            })
+        }
+    </script>
+</body>
+
+</html>
