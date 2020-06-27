@@ -19,7 +19,6 @@
         let publicBoard;
         const params = new URLSearchParams(document.location.search.substring(1));
         const tag = params.get('h');
-        console.log(tag);
         const socket = io('/sp');
         socket.emit('getBoard', tag, (board) => {
             publicBoard = board;
@@ -51,16 +50,16 @@
                 if (clickedCell[0].innerHTML == '') {
                     switch (event.which) {
                     case 1:
-                        console.log('left');
-                        console.log(clickedCell[0].parentNode.rowIndex, clickedCell[0].cellIndex);
+                        // left
                         clickCell(clickedCell[0].parentNode.rowIndex, clickedCell[0].cellIndex)
                         break;
                     case 3:
-                        console.log('right');
+                        // right
                         console.log(clickedCell[0].parentNode.rowIndex, clickedCell[0].cellIndex);
                         break;
                     default:
-                        console.log('null');
+                        // anything else
+                        break;
                 }
                 }
                 
@@ -75,7 +74,6 @@
         function clickCell(x, y) {
             disableClicks();
             socket.emit('boardClick', x, y, tag, (board, state) => {
-                console.log(state);
                 if (state === 'inProgress') {
                     generateGrid(board);
                 }

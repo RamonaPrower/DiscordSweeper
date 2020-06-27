@@ -63,9 +63,6 @@ module.exports = {
             }
         }
         actuallyClickCell(inputRow, inputCol);
-        if (board[inputCol][inputRow].mine === true) {
-            console.log('hit mine');
-        }
         while (toClick.length >= 1) {
             // removes dupes
             toClick = Array.from(new Set(toClick.map(JSON.stringify)), JSON.parse);

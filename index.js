@@ -10,6 +10,8 @@ const { static } = require('express');
 const qdCache = require('qdcache');
 const boardClean = require('./utils/security/boardClean');
 const minesweeperBoard = require('./utils/minesweeper/minesweeperBoard');
+const { getLinkObject } = require('./utils/common');
+const discordSync = require('./utils/discord/discordSync');
 
 // start static distribution
 app.use(static('public'));
@@ -61,9 +63,8 @@ io.of('/sp').on('connection', (socket) => {
         const cleaned = boardClean.cleanToWeb(res.board);
         fn(cleaned);
     });
-    socket.on('boardClick', (x, y, tag, fn) => {
+    socket.on('boardClick', async (x, y, tag, fn) => {
         const res = qdCache.get(tag);
-        console.log(`x${x}y${y}`);
         if (!res) {
             return;
         }
@@ -71,6 +72,8 @@ io.of('/sp').on('connection', (socket) => {
         res.board = board;
         qdCache.set(tag, res);
         const cleaned = boardClean.cleanToWeb(board);
+        const message = await getLinkObject(res.messageLink, client);
+        discordSync.sp.updateBoard(message.message, res.board, res.user);
         if (state !== 'inProgress') {
             qdCache.delete(tag);
         }
