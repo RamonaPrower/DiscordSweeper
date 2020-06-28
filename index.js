@@ -32,7 +32,7 @@ client.on('message', message => {
     const mentioned = message.mentions.has(client.user);
     if (message.author.bot) return;
 
-    if (mentioned === true || config.dev === true) {
+    if (mentioned === true) {
         for (const [key, value] of client.messageCommands) {
             const newReg = key;
             if (newReg.test(message.content)) {
