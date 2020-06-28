@@ -106,7 +106,7 @@ client.on('ready', () => {
 	console.log(`I'm up, and i'm part of ${client.guilds.cache.size} servers`);
 });
 
-client.login(config.token)
+client.login(process.env.DISCORD_TOKEN)
     .then(console.log('Logging In'))
     .catch(console.error);
 
