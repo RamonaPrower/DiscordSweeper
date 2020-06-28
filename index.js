@@ -98,8 +98,9 @@ io.of('/sp').on('connection', (socket) => {
 
 // everything after this point doesn't need to be touched normally
 
-http.listen(3000, () => {
-    console.log('listening on http://localhost:3000');
+const port = process.env.PORT || 3000;
+http.listen(port, () => {
+    console.log(`listening on http://localhost:${port}`);
 });
 
 client.on('ready', () => {
