@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "webwatch": "parcel watch src/*.html",
-    "webbuild": "parcel build src/*.html"
+    "webbuild": "parcel build src/*.html",
+    "start": "node index.js"
   },
   "author": "Ramona Prower",
   "license": "ISC",
