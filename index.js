@@ -14,7 +14,7 @@ const { getLinkObject } = require('./utils/common');
 const discordSync = require('./utils/discord/discordSync');
 
 // start static distribution
-app.use(static('public'));
+app.use(static('dist'));
 
 // start client
 const client = new Discord.Client;
@@ -45,16 +45,16 @@ client.on('message', message => {
 
 // webpage routes
 app.get('/', (req, res) => {
-    res.sendFile(__dirname + '/public/index.html');
+    res.sendFile(__dirname + '/dist/index.html');
 });
 
 app.get('/mine', async (req, res) => {
     const game = qdCache.get(req.query.h);
     if (!game) {
-        res.sendFile(__dirname + '/public/index.html');
+        res.sendFile(__dirname + '/dist/index.html');
         return;
     }
-    res.sendFile(__dirname + '/public/mine.html');
+    res.sendFile(__dirname + '/dist/mine.html');
 });
 
 io.of('/sp').on('connection', (socket) => {

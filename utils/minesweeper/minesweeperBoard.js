@@ -116,7 +116,41 @@ module.exports = {
         else{
             board[inputRow][inputCol].flagged = true;
         }
-        const state = 'inProgress';
-        return { board, state };
+        function revealMines() {
+            for (let i = 0; i < board.length; i++) {
+                for (let j = 0; j < board[i].length; j++) {
+                    if(board[i][j].mine === true && board[i][j].revealed === false) {
+                        board[i][j].revealed = true;
+                    }
+                }
+            }
+        }
+        let levelComplete = true;
+        let levelFailed = false;
+        for (let i = 0; i < board.length; i++) {
+            for (let j = 0; j < board[i].length; j++) {
+                if(board[i][j].mine === false && board[i][j].revealed === false) {
+                    levelComplete = false;
+                }
+                if(board[i][j].mine === true && board[i][j].revealed === true) {
+                    levelComplete = false;
+                    levelFailed = true;
+                    revealMines();
+                }
+            }
+        }
+        if (levelComplete == true) {
+            const state = 'complete';
+            revealMines();
+            return { board, state };
+        }
+        else if (levelFailed == true) {
+            const state = 'failed';
+            return { board, state };
+        }
+        else {
+            const state = 'inProgress';
+            return { board, state };
+        }
     },
 };
