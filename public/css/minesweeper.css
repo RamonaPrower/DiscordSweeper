@@ -1,8 +1,8 @@
 BODY {
-    background: black;
-    color: #DDDDDD;
-    font-family: courier new;
+    background: rgb(218, 218, 218);
+    color: #000000;
     text-align: center;
+    font-family: sans-serif;
   }
   
   H1 {
@@ -24,11 +24,15 @@ BODY {
   }
   
   #grid TR TD.clicked {
-      background: #333333;
+      background: #ffffff;
   }
   
   #grid TR TD.mine {
       background: #FF0000;
+  }
+  
+  #grid TR TD.flag {
+    background: #d39000;
   }
   
   BUTTON {

@@ -17,6 +17,7 @@ module.exports = {
                     mine: false,
                     minecount: 0,
                     revealed: false,
+                    flagged: false,
                 };
             }
         }
@@ -107,5 +108,15 @@ module.exports = {
             const state = 'inProgress';
             return { board, state };
         }
+    },
+    flagCell(board, inputRow, inputCol) {
+        if (board[inputRow][inputCol].flagged === true) {
+            board[inputRow][inputCol].flagged = false;
+        }
+        else{
+            board[inputRow][inputCol].flagged = true;
+        }
+        const state = 'inProgress';
+        return { board, state };
     },
 };

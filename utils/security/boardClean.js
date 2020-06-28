@@ -1,15 +1,22 @@
 module.exports = {
     cleanToWeb(board) {
-        for (let i = 0; i < board.length; i++) {
-            for (let j = 0; j < board[i].length; j++) {
-                if (board[i][j].revealed === false) {
-                    board[i][j] = {
+        const newBoard = board;
+        for (let i = 0; i < newBoard.length; i++) {
+            for (let j = 0; j < newBoard[i].length; j++) {
+                if (newBoard[i][j].revealed === false && newBoard[i][j].flagged === false) {
+                    newBoard[i][j] = {
                         revealed: false,
+                    };
+                }
+                else if (newBoard[i][j].revealed === false && newBoard[i][j].flagged === true) {
+                    newBoard[i][j] = {
+                        revealed: false,
+                        flagged: true,
                     };
                 }
 
             }
         }
-        return board;
+        return newBoard;
     },
 };

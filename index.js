@@ -64,7 +64,7 @@ io.of('/sp').on('connection', (socket) => {
         fn(cleaned);
     });
     socket.on('boardClick', async (x, y, tag, fn) => {
-        const res = qdCache.get(tag);
+        let res = qdCache.get(tag);
         if (!res) {
             return;
         }
@@ -73,10 +73,25 @@ io.of('/sp').on('connection', (socket) => {
         qdCache.set(tag, res);
         const cleaned = boardClean.cleanToWeb(board);
         const message = await getLinkObject(res.messageLink, client);
-        discordSync.sp.updateBoard(message.message, res.board, res.user);
+        res = qdCache.get(tag);
+        discordSync.sp.updateBoard(message.message, res.board, res.user, state);
         if (state !== 'inProgress') {
             qdCache.delete(tag);
         }
+        fn(cleaned, state);
+    });
+    socket.on('flagClick', async (x, y, tag, fn) => {
+        let res = qdCache.get(tag);
+        if (!res) {
+            return;
+        }
+        const { board, state } = minesweeperBoard.flagCell(res.board, x, y);
+        res.board = board;
+        qdCache.set(tag, res);
+        const cleaned = boardClean.cleanToWeb(board);
+        const message = await getLinkObject(res.messageLink, client);
+        res = qdCache.get(tag);
+        discordSync.sp.updateBoard(message.message, res.board, res.user);
         fn(cleaned, state);
     });
 });

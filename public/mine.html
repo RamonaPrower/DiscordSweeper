@@ -39,6 +39,10 @@
                     else if (board[i][j].revealed === true && board[i][j].mine === true){
                         cell.className = 'mine'
                     }
+                    else if (board[i][j].revealed === false && board[i][j].flagged === true){
+                        cell.innerHTML = '🚩'
+                        cell.className = 'flag'
+                    }
                 }
             };
             enableClicks();
@@ -47,7 +51,7 @@
             $("#grid:has(td)").mouseup(function(event) {
                 const clickedCell = $(event.target).closest("td");
 
-                if (clickedCell[0].innerHTML == '') {
+                if (clickedCell[0].innerHTML == '' || clickedCell[0].innerHTML == '🚩') {
                     switch (event.which) {
                     case 1:
                         // left
@@ -55,7 +59,7 @@
                         break;
                     case 3:
                         // right
-                        console.log(clickedCell[0].parentNode.rowIndex, clickedCell[0].cellIndex);
+                        flagCell(clickedCell[0].parentNode.rowIndex, clickedCell[0].cellIndex);
                         break;
                     default:
                         // anything else
@@ -81,6 +85,13 @@
                     generateGrid(board);
                     disableClicks();
                 }
+            })
+        }
+        function flagCell(x, y) {
+            console.log(x, y);
+            disableClicks();
+            socket.emit('flagClick', x, y, tag, (board, state) => {
+                generateGrid(board);
             })
         }
     </script>
