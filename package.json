@@ -6,19 +6,19 @@
   "scripts": {
     "webwatch": "parcel watch src/*.html",
     "webbuild": "parcel build src/*.html",
-    "start": "node index.js"
+    "startserver": "node index.js",
+    "start": "npm run webbuild && npm run startserver"
   },
   "author": "Ramona Prower",
   "license": "ISC",
   "dependencies": {
     "discord.js": "^12.0.1",
     "express": "^4.17.1",
+    "jquery": "^3.5.1",
     "nanoid": "^3.1.10",
+    "parcel-bundler": "^1.12.4",
     "qdcache": "^1.0.2",
     "socket.io": "^2.3.0"
   },
-  "devDependencies": {
-    "jquery": "^3.5.1",
-    "parcel-bundler": "^1.12.4"
-  }
+  "devDependencies": {}
 }
