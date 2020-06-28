@@ -1,6 +1,6 @@
 // imports
 const Discord = require('discord.js');
-const config = require('./config.json');
+// const config = require('./config.json');
 const commandList = require('./commands/command');
 
 const app = require('express')();
