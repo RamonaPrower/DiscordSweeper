@@ -3,9 +3,14 @@ const io = require('socket.io-client');
 window.$ = require('jquery');
 
 let publicBoard;
+let globalState;
 const params = new URLSearchParams(document.location.search.substring(1));
 const tag = params.get('h');
 const socket = io('/sp');
+$('#newBoardButton').click(() => {
+    newBoard();
+});
+
 socket.emit('getBoard', tag, (board) => {
     publicBoard = board;
     generateGrid(board);
@@ -89,11 +94,19 @@ function disableClicks() {
 function clickCell(x, y) {
     disableClicks();
     socket.emit('boardClick', x, y, tag, (board, state) => {
+        globalState = state;
         if (state === 'inProgress') {
             // generateGrid(board);
             updateGrid(board);
         }
+        else if (state === 'failed') {
+            blurGrid();
+            generateGrid(board);
+            disableClicks();
+            console.log('failed board');
+        }
         else {
+            blurGrid();
             generateGrid(board);
             disableClicks();
         }
@@ -106,4 +119,17 @@ function flagCell(x, y) {
         // generateGrid(board);
         updateGrid(board);
     });
+}
+function newBoard() {
+    disableClicks();
+    socket.emit('newBoard', tag, globalState, (board) => {
+        unblurGrid();
+        generateGrid(board);
+    });
+}
+function blurGrid(board) {
+    $('#grid:has(td)').css({ 'filter': 'blur(5px)' });
+}
+function unblurGrid(board) {
+    $('#grid:has(td)').css({ 'filter': 'blur(0px)' });
 }

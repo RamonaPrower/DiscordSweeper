@@ -10,7 +10,24 @@ BODY {
     font-size: 32pt;
     font-weight: normal;
   }
+  #container{
+    position: static;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: auto;
+    margin-bottom: auto;
+    z-index: 3;
+  }
+  
   #grid {
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: auto;
+    margin-bottom: auto;
+    position: relative;
+    z-index: 2;
+  }
+  #newBoardButton {
     margin-left: auto;
     margin-right: auto;
     margin-top: auto;
@@ -25,6 +42,7 @@ BODY {
     height: 64px;
     text-align: center;
     transition: all 0.2s ease-out;
+    z-index: 1;
   }
   #grid TR TD:hover {
     background: #bdbcbc;
