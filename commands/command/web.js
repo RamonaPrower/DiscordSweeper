@@ -23,7 +23,7 @@ module.exports = {
             await message.channel.send(`random link is http://localhost:3000/mine?h=${genCode}`);
         }
         else {
-            await message.channel.send(`random link is https://ms.pupy.plus/mine?h=${genCode}`);
+            await message.author.send(`random link is https://ms.pupy.plus/mine?h=${genCode}`);
         }
         const toSendMessage = minesweeperDiscord.parseFromWebToMessage(board);
         toSendMessage.push(`board generated for ${message.member.displayName}`);
