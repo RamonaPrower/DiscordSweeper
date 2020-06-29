@@ -16,7 +16,7 @@ module.exports = {
             board = MinesweeperBoard.generate();
         }
         const genCode = nanoid(14);
-        await message.channel.send(`random link is http://discordsweeper-test.herokuapp.com/mine?h=${genCode}`);
+        await message.channel.send(`random link is https://ms.pupy.plus/mine?h=${genCode}`);
         const toSendMessage = minesweeperDiscord.parseFromWebToMessage(board);
         toSendMessage.push(`board generated for ${message.member.displayName}`);
         const sentMessage = await message.channel.send(toSendMessage);
