@@ -18,7 +18,7 @@ BODY {
     margin-bottom: auto;
     z-index: 3;
   }
-  
+
   #grid {
     margin-left: auto;
     margin-right: auto;
@@ -28,11 +28,25 @@ BODY {
     z-index: 2;
   }
   #newBoardButton {
+    background-color: #4caf50;
+    border: none;
+    color: white;
+    text-align: center;
+    text-decoration: none;
     margin-left: auto;
     margin-right: auto;
     margin-top: auto;
-    margin-bottom: auto;
-    position: relative;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    padding: 10px;
+    position: sticky;
+    font-size: 24px;
+    transition: all 0.1s ease-out;
+  }
+  #newBoardButton:hover {
+    border: 2px solid #4caf50;
+    background-color: white;
+    color: #4caf50;
   }
   
   #grid TR TD{
@@ -41,7 +55,7 @@ BODY {
     width: 64px;
     height: 64px;
     text-align: center;
-    transition: all 0.2s ease-out;
+    transition: all 0.15s ease-out;
     z-index: 1;
   }
   #grid TR TD:hover {

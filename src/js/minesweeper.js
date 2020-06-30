@@ -11,9 +11,23 @@ $('#newBoardButton').click(() => {
     newBoard();
 });
 
-socket.emit('getBoard', tag, (board) => {
+socket.emit('getBoard', tag, (board, state) => {
     publicBoard = board;
-    generateGrid(board);
+    globalState = state;
+    if (state === 'inProgress') {
+        generateGrid(board);
+    }
+    else if (state === 'failed') {
+        blurGrid();
+        generateGrid(board);
+        disableClicks();
+        console.log('failed board');
+    }
+    else {
+        blurGrid();
+        generateGrid(board);
+        disableClicks();
+    }
 });
 
 function generateGrid(board) {
@@ -127,9 +141,10 @@ function newBoard() {
         generateGrid(board);
     });
 }
-function blurGrid(board) {
+function blurGrid() {
     $('#grid:has(td)').css({ 'filter': 'blur(5px)' });
+
 }
-function unblurGrid(board) {
+function unblurGrid() {
     $('#grid:has(td)').css({ 'filter': 'blur(0px)' });
 }

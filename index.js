@@ -74,7 +74,7 @@ io.of('/sp').on('connection', (socket) => {
     socket.on('getBoard', (tag, fn) => {
         const res = storageHandler.get(tag);
         const cleaned = boardClean.cleanToWeb(res.board);
-        fn(cleaned);
+        fn(cleaned, res.state);
     });
     socket.on('boardClick', async (x, y, tag, fn) => {
         let res = storageHandler.get(tag);
