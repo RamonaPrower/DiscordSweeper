@@ -108,4 +108,7 @@ dist/*
 config.json
 .vscode
 .scannerwork
+docs/todo
+
+
 
