@@ -80,7 +80,9 @@ typings/
 
 # Nuxt.js build / generate output
 .nuxt
-dist
+dist/*
+# this has to be done cause parcler won't copy sounds across
+!dist/sounds
 
 # Gatsby files
 .cache/
@@ -105,4 +107,8 @@ dist
 
 config.json
 .vscode
+.scannerwork
+docs/todo
+
+
 

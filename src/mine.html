@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/minesweeper.css">
+    <title>Minesweeper Page</title>
+</head>
+
+<body>
+    <H1>Minesweeper</H1>
+    <div class="container"> 
+        <div class="containerContent"> 
+            <button id=newBoardButton>New Game</button>
+        </div>
+        <div class="containerContent" id="counterStorage"> 
+            <div id="mineCount">Mines:</div>
+            <p>
+                <div id="flagCount">flags:</div>
+            
+        </div>
+        <div class="containerContent">
+            <div id="timer">Timer: 0:00</div>
+        </div>
+    </div>
+
+    <div id="container">
+        <div id="confetti"></div>
+        <div id="status"></div>
+        <table id=grid>
+        </table>
+    </div>
+    <script src="/js/minesweeper.js"></script>
+</body>
+
+</html>
