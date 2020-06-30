@@ -1,6 +1,19 @@
 /* eslint-disable no-undef */
 const io = require('socket.io-client');
 window.$ = require('jquery');
+const { Howl, Howler } = require('howler');
+
+const flip = new Howl({
+    src: ['/sounds/click.wav'],
+});
+
+const boom = new Howl({
+    src: ['/sounds/boom.wav'],
+});
+
+const bell = new Howl({
+    src: ['/sounds/flag.wav'],
+});
 
 let publicBoard;
 let globalState;
@@ -53,12 +66,14 @@ function generateGrid(board) {
 }
 function updateGrid(board) {
     const grid = document.getElementById('grid');
+    let flips = 0;
     for (let i = 0; i < board.length; i++) {
         const row = grid.rows[i];
         for (let j = 0; j < board[i].length; j++) {
             const cell = row.cells[j];
             if (board[i][j].revealed === true && board[i][j].mine === false) {
                 if (cell.className == '') {
+                    flips++;
                     cell.className = 'half';
                     setTimeout(() => {
                         cell.innerHTML = board[i][j].minecount;
@@ -71,11 +86,35 @@ function updateGrid(board) {
                 }
             }
             else if (board[i][j].revealed === true && board[i][j].mine === true) {
-                cell.className = 'mine';
+                if (cell.className == '') {
+                    cell.className = 'half';
+                    setTimeout(() => {
+                        cell.className = 'mine';
+                    }, 65);
+                }
+                else {
+                    cell.className = 'mine';
+                }
+
             }
             else if (board[i][j].revealed === false && board[i][j].flagged === true) {
-                cell.innerHTML = '🚩';
-                cell.className = 'flag';
+                if (cell.className == '') {
+
+                    flip.play();
+                    setTimeout(() => {
+                        bell.play();
+                    }, 100);
+                    cell.className = 'half';
+                    setTimeout(() => {
+                        cell.innerHTML = '🚩';
+                        cell.className = 'flag';
+                    }, 65);
+                }
+                else {
+                    cell.innerHTML = '🚩';
+                    cell.className = 'flag';
+                }
+
             }
             else{
                 cell.innerHTML = '';
@@ -84,6 +123,16 @@ function updateGrid(board) {
             }
         }
     }
+    if (flips > 0) {
+        if (flips > 3) {flips = 3;}
+        (function flipLoop(i) {
+            setTimeout(function() {
+                flip.play();
+                if (--i) flipLoop(i);
+            }, 45);
+        })(flips);
+    }
+
     enableClicks();
 }
 function enableClicks() {
@@ -124,6 +173,7 @@ function clickCell(x, y) {
         }
         else if (state === 'failed') {
             blurGrid();
+            boom.play();
             generateGrid(board);
             disableClicks();
             console.log('failed board');
