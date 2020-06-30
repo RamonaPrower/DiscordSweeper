@@ -11,12 +11,22 @@ BODY {
     font-weight: normal;
   }
   #container{
-    position: static;
+    position: relative;
     margin-left: auto;
     margin-right: auto;
     margin-top: auto;
     margin-bottom: auto;
+    overflow: hidden;
     z-index: 3;
+  }
+  #confetti {
+    position: absolute;
+    width: 1%;
+    height: 1%;
+    margin-top: 25vh;
+    margin-left: 50vw;
+    margin-right: auto;
+    z-index: 4;
   }
 
   #grid {
@@ -53,8 +63,8 @@ BODY {
   #grid TR TD{
     border:1px solid white;
     background: #999999;
-    width: 64px;
-    height: 64px;
+    width: 48px;
+    height: 48px;
     transform: rotateY(180deg);
     text-align: center;
     transition: all 75ms;

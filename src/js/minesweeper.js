@@ -3,20 +3,42 @@ const io = require('socket.io-client');
 window.$ = require('jquery');
 const { Howl, Howler } = require('howler');
 
+const { confetti } = require('dom-confetti');
+
+// setup
+
+const config = {
+    angle: '90',
+    spread: '181',
+    startVelocity: '61',
+    elementCount: '200',
+    dragFriction: '0.27',
+    duration: '3950',
+    stagger: '3',
+    width: '20px',
+    height: '20px',
+    perspective: '0px',
+    colors: ['#a864fd', '#29cdff', '#78ff44', '#ff718d', '#fdff6a'],
+  };
+
 const flip = new Howl({
     src: ['/sounds/click.wav'],
+    volume: 0.3,
 });
 
 const boom = new Howl({
     src: ['/sounds/boom.wav'],
+    volume: 0.2,
 });
 
 const bell = new Howl({
     src: ['/sounds/flag.wav'],
+    volume: 0.3,
 });
 
 const victory = new Howl({
     src: ['/sounds/victory.mp3'],
+    volume: 0.3,
 });
 
 let publicBoard;
@@ -183,6 +205,8 @@ function clickCell(x, y) {
         }
         else {
             generateGrid(board);
+            const container = document.getElementById('confetti');
+            confetti(container, config);
             victory.play();
             disableClicks();
             blurGrid();

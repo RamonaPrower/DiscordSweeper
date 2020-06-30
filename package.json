@@ -14,6 +14,7 @@
   "license": "ISC",
   "dependencies": {
     "discord.js": "^12.0.1",
+    "dom-confetti": "^0.2.2",
     "express": "^4.17.1",
     "howler": "^2.2.0",
     "jquery": "^3.5.1",
