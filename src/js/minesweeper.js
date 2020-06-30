@@ -58,8 +58,17 @@ function updateGrid(board) {
         for (let j = 0; j < board[i].length; j++) {
             const cell = row.cells[j];
             if (board[i][j].revealed === true && board[i][j].mine === false) {
-                cell.innerHTML = board[i][j].minecount;
-                cell.className = 'clicked';
+                if (cell.className == '') {
+                    cell.className = 'half';
+                    setTimeout(() => {
+                        cell.innerHTML = board[i][j].minecount;
+                        cell.className = 'clicked';
+                    }, 65);
+                }
+                else {
+                    cell.innerHTML = board[i][j].minecount;
+                        cell.className = 'clicked';
+                }
             }
             else if (board[i][j].revealed === true && board[i][j].mine === true) {
                 cell.className = 'mine';

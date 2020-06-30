@@ -54,24 +54,32 @@ BODY {
     background: #999999;
     width: 64px;
     height: 64px;
+    transform: rotateY(180deg);
     text-align: center;
-    transition: all 0.15s ease-out;
+    transition: all 75ms;
     z-index: 1;
   }
   #grid TR TD:hover {
     background: #bdbcbc;
   }
+
+  #grid TR TD.half {
+    transform: rotateY(90deg);
+  }
   
   #grid TR TD.clicked {
       background: #ffffff;
+      transform: rotateY(0deg);
   }
   
   #grid TR TD.mine {
       background: #FF0000;
+      transform: rotateY(0deg);
   }
   
   #grid TR TD.flag {
     background: #d39000;
+    transform: rotateY(0deg);
   }
   
   BUTTON {
