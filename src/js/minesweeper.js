@@ -2,8 +2,10 @@
 const io = require('socket.io-client');
 window.$ = require('jquery');
 const { Howl, Howler } = require('howler');
-
 const { confetti } = require('dom-confetti');
+const { DuckTimer } = require('duck-timer');
+const { min } = require('moment');
+const timer = new DuckTimer({ interval: 1000 });
 
 // setup
 
@@ -43,6 +45,7 @@ const victory = new Howl({
 
 let publicBoard;
 let globalState;
+let flagCounter;
 const params = new URLSearchParams(document.location.search.substring(1));
 const tag = params.get('h');
 const socket = io('/sp');
@@ -50,15 +53,17 @@ $('#newBoardButton').click(() => {
     newBoard();
 });
 
-socket.emit('getBoard', tag, (board, state) => {
+socket.emit('getBoard', tag, (board, state, mines) => {
     publicBoard = board;
     globalState = state;
+    initialMines(mines);
     if (state === 'inProgress') {
         generateGrid(board);
     }
     else if (state === 'failed') {
         blurGrid();
         generateGrid(board);
+        timer.stop();
         disableClicks();
         console.log('failed board');
     }
@@ -66,11 +71,14 @@ socket.emit('getBoard', tag, (board, state) => {
         blurGrid();
         generateGrid(board);
         disableClicks();
+        timer.stop();
     }
 });
 
 function generateGrid(board) {
+    timer.reset();
     grid.innerHTML = '';
+    flagCounter = 0;
     for (let i = 0; i < board.length; i++) {
         const row = grid.insertRow(i);
         for (let j = 0; j < board[i].length; j++) {
@@ -80,19 +88,33 @@ function generateGrid(board) {
                 cell.className = 'clicked';
             }
             else if (board[i][j].revealed === true && board[i][j].mine === true) {
+                flagCounter++;
                 cell.className = 'mine';
             }
             else if (board[i][j].revealed === false && board[i][j].flagged === true) {
+                flagCounter++;
                 cell.innerHTML = '🚩';
                 cell.className = 'flag';
             }
         }
     }
+    timer.onInterval(res => {
+        let minCount = 0;
+        if (res.minutes > 0) {
+            minCount = res.minutes;
+        }
+        let calcSecs = res.seconds - (minCount * 60);
+        if (calcSecs < 10) calcSecs = '0' + calcSecs;
+        const str = `Timer: ${minCount}:${calcSecs}`;
+        $('#timer').text(str);
+    }).start();
     enableClicks();
+    updateFlagCounter();
 }
 function updateGrid(board) {
     const grid = document.getElementById('grid');
     let flips = 0;
+    flagCounter = 0;
     for (let i = 0; i < board.length; i++) {
         const row = grid.rows[i];
         for (let j = 0; j < board[i].length; j++) {
@@ -124,8 +146,8 @@ function updateGrid(board) {
 
             }
             else if (board[i][j].revealed === false && board[i][j].flagged === true) {
+                flagCounter++;
                 if (cell.className == '') {
-
                     flip.play();
                     setTimeout(() => {
                         bell.play();
@@ -160,6 +182,7 @@ function updateGrid(board) {
     }
 
     enableClicks();
+    updateFlagCounter();
 }
 function enableClicks() {
     $('#grid:has(td)').mouseup(function(event) {
@@ -202,6 +225,7 @@ function clickCell(x, y) {
             generateGrid(board);
             disableClicks();
             blurGrid();
+            timer.stop();
         }
         else {
             generateGrid(board);
@@ -210,6 +234,7 @@ function clickCell(x, y) {
             victory.play();
             disableClicks();
             blurGrid();
+            timer.stop();
         }
     });
 }
@@ -234,4 +259,13 @@ function blurGrid() {
 }
 function unblurGrid() {
     $('#grid:has(td)').css({ 'filter': 'blur(0px)', 'transition': 'all 0.3s ease-in' });
+}
+function updateFlagCounter() {
+    const newStr = 'flags: ' + flagCounter.toString();
+    console.log(newStr);
+    $('#flagCount').text(newStr);
+}
+function initialMines(mines) {
+    const newStr = `mines: ${mines}`;
+    $('#mineCount').text(newStr);
 }

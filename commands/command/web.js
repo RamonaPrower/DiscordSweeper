@@ -10,13 +10,16 @@ module.exports = {
 	async execute(message) {
         let board;
         let difficulty;
+        let mines;
         if (message.content.endsWith('medium')) {
             board = MinesweeperBoard.generate('medium');
             difficulty = 'medium';
+            mines = 10;
         }
         else {
             board = MinesweeperBoard.generate();
             difficulty = 'easy';
+            mines = 4;
         }
         const genCode = nanoid(14);
         if (process.env.NODE_ENV !== 'production') {
@@ -37,6 +40,7 @@ module.exports = {
         const store = {
             messageLink: sentMessage.url,
             board,
+            mines,
             user: message.member.displayName,
             state: 'inProgress',
             difficulty,
