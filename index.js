@@ -73,6 +73,7 @@ app.get('/mine', async (req, res) => {
 io.of('/sp').on('connection', (socket) => {
     socket.on('getBoard', (tag, fn) => {
         const res = storageHandler.get(tag);
+        if (!res) return;
         const cleaned = boardClean.cleanToWeb(res.board);
         fn(cleaned, res.state, res.mines);
     });
@@ -108,6 +109,7 @@ io.of('/sp').on('connection', (socket) => {
     });
     socket.on('newBoard', async (tag, state, fn) => {
         let res = storageHandler.get(tag);
+        if (!res) return;
         const newBoard = minesweeperBoard.generate(res.difficulty);
         res.board = newBoard;
         res.state = 'inProgress';

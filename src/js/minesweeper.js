@@ -61,22 +61,24 @@ socket.emit('getBoard', tag, (board, state, mines) => {
         generateGrid(board);
     }
     else if (state === 'failed') {
-        blurGrid();
         generateGrid(board);
+        blurGrid();
         timer.stop();
         disableClicks();
-        console.log('failed board');
+        showFailStatus();
     }
     else {
-        blurGrid();
         generateGrid(board);
+        blurGrid();
         disableClicks();
         timer.stop();
+        showWinStatus();
     }
 });
 
 function generateGrid(board) {
     timer.reset();
+    clearStatus();
     grid.innerHTML = '';
     flagCounter = 0;
     for (let i = 0; i < board.length; i++) {
@@ -226,6 +228,7 @@ function clickCell(x, y) {
             disableClicks();
             blurGrid();
             timer.stop();
+            showFailStatus();
         }
         else {
             generateGrid(board);
@@ -235,11 +238,11 @@ function clickCell(x, y) {
             disableClicks();
             blurGrid();
             timer.stop();
+            showWinStatus();
         }
     });
 }
 function flagCell(x, y) {
-    console.log(x, y);
     disableClicks();
     socket.emit('flagClick', x, y, tag, (board, state) => {
         // generateGrid(board);
@@ -262,10 +265,21 @@ function unblurGrid() {
 }
 function updateFlagCounter() {
     const newStr = 'flags: ' + flagCounter.toString();
-    console.log(newStr);
     $('#flagCount').text(newStr);
 }
 function initialMines(mines) {
     const newStr = `mines: ${mines}`;
     $('#mineCount').text(newStr);
+}
+
+function clearStatus() {
+    $('#status').hide();
+}
+function showFailStatus() {
+    $('#status').show();
+    $('#status').text('Failed! :(');
+}
+function showWinStatus() {
+    $('#status').show();
+    $('#status').text('Victory! :)');
 }
