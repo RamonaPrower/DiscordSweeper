@@ -26,6 +26,7 @@ BODY {
     margin-bottom: auto;
     position: relative;
     z-index: 2;
+    transition: all 0.3s ease-in;
   }
   #newBoardButton {
     background-color: #4caf50;

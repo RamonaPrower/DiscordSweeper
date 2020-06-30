@@ -15,6 +15,10 @@ const bell = new Howl({
     src: ['/sounds/flag.wav'],
 });
 
+const victory = new Howl({
+    src: ['/sounds/victory.mp3'],
+});
+
 let publicBoard;
 let globalState;
 const params = new URLSearchParams(document.location.search.substring(1));
@@ -82,7 +86,7 @@ function updateGrid(board) {
                 }
                 else {
                     cell.innerHTML = board[i][j].minecount;
-                        cell.className = 'clicked';
+                    cell.className = 'clicked';
                 }
             }
             else if (board[i][j].revealed === true && board[i][j].mine === true) {
@@ -116,7 +120,7 @@ function updateGrid(board) {
                 }
 
             }
-            else{
+            else {
                 cell.innerHTML = '';
                 cell.className = '';
 
@@ -124,7 +128,7 @@ function updateGrid(board) {
         }
     }
     if (flips > 0) {
-        if (flips > 3) {flips = 3;}
+        if (flips > 3) { flips = 3; }
         (function flipLoop(i) {
             setTimeout(function() {
                 flip.play();
@@ -162,26 +166,26 @@ function enableClicks() {
 }
 function disableClicks() {
     $('#grid:has(td)').off('mouseup');
+    $('#grid:has(td)').css;
 }
 function clickCell(x, y) {
     disableClicks();
     socket.emit('boardClick', x, y, tag, (board, state) => {
         globalState = state;
         if (state === 'inProgress') {
-            // generateGrid(board);
             updateGrid(board);
         }
         else if (state === 'failed') {
-            blurGrid();
             boom.play();
             generateGrid(board);
             disableClicks();
-            console.log('failed board');
+            blurGrid();
         }
         else {
-            blurGrid();
             generateGrid(board);
+            victory.play();
             disableClicks();
+            blurGrid();
         }
     });
 }
@@ -201,9 +205,9 @@ function newBoard() {
     });
 }
 function blurGrid() {
-    $('#grid:has(td)').css({ 'filter': 'blur(5px)' });
+    $('#grid:has(td)').css({ 'filter': 'blur(5px)', 'transition': 'all 0.3s ease-in' });
 
 }
 function unblurGrid() {
-    $('#grid:has(td)').css({ 'filter': 'blur(0px)' });
+    $('#grid:has(td)').css({ 'filter': 'blur(0px)', 'transition': 'all 0.3s ease-in' });
 }
