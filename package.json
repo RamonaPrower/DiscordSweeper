@@ -13,6 +13,7 @@
   "author": "Ramona Prower",
   "license": "ISC",
   "dependencies": {
+    "@fortawesome/fontawesome-free": "^5.13.1",
     "discord.js": "^12.0.1",
     "dom-confetti": "^0.2.2",
     "duck-timer": "^1.0.2",
