@@ -13,9 +13,9 @@ const config = {
     angle: '90',
     spread: '181',
     startVelocity: '61',
-    elementCount: '200',
+    elementCount: '50',
     dragFriction: '0.27',
-    duration: '3950',
+    duration: '6000',
     stagger: '3',
     width: '20px',
     height: '20px',
@@ -52,6 +52,36 @@ const socket = io('/sp');
 $('#newBoardButton').click(() => {
     newBoard();
 });
+
+const toggle = document.querySelector('.theme input');
+const toggleSpan = document.querySelector('#checkBoxImg');
+
+function switchTheme(tog) {
+    if (tog.target.checked) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        localStorage.setItem('theme', 'dark');
+        toggleSpan.innerHTML = '<i class="far fa-lightbulb"></i>';
+    }
+    else {
+        document.documentElement.setAttribute('data-theme', 'light');
+        localStorage.setItem('theme', 'light');
+        toggleSpan.innerHTML = '<i class="fas fa-lightbulb"></i>';
+    }
+}
+toggle.addEventListener('change', switchTheme, false);
+const currentTheme = localStorage.getItem('theme') ? localStorage.getItem('theme') : 'light';
+
+if (currentTheme) {
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    if (currentTheme === 'dark') {
+        toggle.checked = true;
+        toggleSpan.innerHTML = '<i class="far fa-lightbulb"></i>';
+    }
+    else {
+        toggleSpan.innerHTML = '<i class="fas fa-lightbulb"></i>';
+    }
+}
+
 
 socket.emit('getBoard', tag, (board, state, mines) => {
     publicBoard = board;

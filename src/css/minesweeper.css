@@ -1,8 +1,44 @@
+
+@import url('../../node_modules/@fortawesome/fontawesome-free/css/all.min.css');
+:root {
+  --font-colour: #000000;
+  --background-colour: rgb(218, 218, 218);
+  --status-font: white;
+  --status-shadow: 1px 1px 2px black, 0 0 25px black, 0 0 5px black;
+  --newBoardColour: #4caf50;
+  --newBoardText: white;
+  --newBoardHoverBg: #ffffff;
+  --gridBackground: #999999;
+  --gridBorder:white;
+  --gridBackgroundHover: #bdbcbc;
+  --gridBackgroundClicked: #ffffff;
+  --gridBackgroundMine: #ff0000;
+  --gridBackgroundFlag: #d39000;
+
+}
+
+[data-theme="dark"] {
+  --font-colour: #e0e1dd;
+  --background-colour: #0d1b2a;
+  --status-font: white;
+  --status-shadow: 1px 1px 2px black, 0 0 25px black, 0 0 5px black;
+  --newBoardColour: #33465c;
+  --newBoardText: white;
+  --newBoardHoverBg: #aed8ea;
+  --gridBackground: #0d1b2a;
+  --gridBorder:#8fb8de;
+  --gridBackgroundHover: #33465c;
+  --gridBackgroundClicked: #465d72;
+  --gridBackgroundMine: #ff0000;
+  --gridBackgroundFlag: #B58112;
+}
+
 BODY {
-    background: rgb(218, 218, 218);
-    color: #000000;
+    background: var(--background-colour);
+    color: var(--font-colour);
     text-align: center;
     font-family: sans-serif;
+    transition: all 0.4s;
   }
   
   H1 {
@@ -37,23 +73,26 @@ BODY {
     margin-right: 10px;
   }
   #confetti {
-    position: absolute;
+    position: fixed;
     width: 1%;
     height: 1%;
-    margin-top: 25vh;
-    margin-left: 50vw;
+    margin-top: 10vh;
+    margin-left: auto;
     margin-right: auto;
-    z-index: 4;
+    z-index: 5;
+    pointer-events: none;
+    overflow: visible;
   }
   #status {
-    margin: auto;
+    margin: 1%;
     font-size: 64px;
     position: absolute;
-    width: 100%;
+    width: 98%;
     top: 50vh;
+    overflow: hidden;
     z-index: 3;
-    color: white;
-    text-shadow: 1px 1px 2px black, 0 0 25px black, 0 0 5px black;
+    color: var(--status-font);
+    text-shadow: var(--status-shadow);
     text-align: center;
   }
   #grid {
@@ -67,9 +106,9 @@ BODY {
     transition: all 0.3s ease-in;
   }
   #newBoardButton {
-    background-color: #4caf50;
-    border: 2px solid #4caf50;
-    color: white;
+    background-color: var(--newBoardColour);
+    border: 2px solid var(--newBoardColour);
+    color: var(--newBoardText);
     text-align: center;
     text-decoration: none;
     margin: auto;
@@ -79,14 +118,14 @@ BODY {
     transition: all 0.1s ease-out;
   }
   #newBoardButton:hover {
-    border: 2px solid #4caf50;
-    background-color: white;
-    color: #4caf50;
+    border: 2px solid var(--newBoardColour);
+    background-color: var(--newBoardHoverBg);
+    color: var(--newBoardColour);
   }
   
   #grid TR TD{
-    border:1px solid white;
-    background: #999999;
+    border:1px solid var(--gridBorder);
+    background: var(--gridBackground);
     width: 48px;
     height: 48px;
     transform: rotateY(180deg);
@@ -95,7 +134,7 @@ BODY {
     z-index: 1;
   }
   #grid TR TD:hover {
-    background: #bdbcbc;
+    background: var(--gridBackgroundHover);
   }
 
   #grid TR TD.half {
@@ -103,20 +142,38 @@ BODY {
   }
   
   #grid TR TD.clicked {
-      background: #ffffff;
+      background: var(--gridBackgroundClicked);
       transform: rotateY(0deg);
   }
   
   #grid TR TD.mine {
-      background: #FF0000;
+      background: var(--gridBackgroundMine);
       transform: rotateY(0deg);
   }
   
   #grid TR TD.flag {
-    background: #d39000;
+    background: var(--gridBackgroundFlag);
     transform: rotateY(0deg);
   }
-  
+
+  #themeContainer {
+    position: fixed;
+    top: 0px;
+    right: 0px;
+    margin: 15px;
+    align-content: center;
+
+  }
+
+  .theme input{
+    display: none;
+  }
+
+  #checkBoxImg {
+    font-size: 32px;
+    display: block;
+  }
+
   BUTTON {
     margin: 12px;
   }

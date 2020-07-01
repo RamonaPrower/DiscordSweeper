@@ -50,7 +50,9 @@ module.exports = {
         return board;
     },
     clickCell(board, inputRow, inputCol) {
+
         let toClick = [];
+        // click cell function
         function actuallyClickCell(row, col) {
             board[row][col].revealed = true;
             if (board[row][col].minecount == 0) {
@@ -60,6 +62,13 @@ module.exports = {
                             toClick.push([newRow, newCol]);
                         }
                     }
+                }
+            }
+        }
+        for (const row of board) {
+            for (const cell of row) {
+                if (cell.revealed === true) {
+                    freshBoard = false;
                 }
             }
         }
@@ -151,6 +160,32 @@ module.exports = {
         else {
             const state = 'inProgress';
             return { board, state };
+        }
+    },
+    clickCellSafely(oldBoard, inputRow, inputCol, difficulty) {
+        let firstClicked = true;
+        const safeBoard = false;
+        for (const row of oldBoard) {
+            for (const cell of row) {
+                if (cell.revealed === true) {
+                    firstClicked = false;
+                }
+            }
+        }
+        if (firstClicked === false) {
+            console.log('clicked board');
+            const { board, state } = this.clickCell(oldBoard, inputRow, inputCol);
+            return { board, state };
+        }
+        while (safeBoard === false) {
+            console.log('testing to see if board is safe');
+            const { board, state } = this.clickCell(oldBoard, inputRow, inputCol);
+            if (state === 'inProgress') {
+                return { board, state };
+            }
+            else {
+                oldBoard = this.generate(difficulty);
+            }
         }
     },
 };

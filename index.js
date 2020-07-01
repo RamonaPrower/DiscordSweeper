@@ -82,7 +82,7 @@ io.of('/sp').on('connection', (socket) => {
         if (!res || res.state !== 'inProgress') {
             return;
         }
-        const{ board, state } = minesweeperBoard.clickCell(res.board, x, y);
+        const{ board, state } = minesweeperBoard.clickCellSafely(res.board, x, y, res.difficulty);
         res.board = board;
         res.state = state;
         storageHandler.set(tag, res);

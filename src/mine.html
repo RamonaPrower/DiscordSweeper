@@ -9,20 +9,31 @@
 </head>
 
 <body>
+    <div id="themeContainer">
+        <label class="theme">
+            <input type="checkbox" name="theme" id="darkCheck" />
+            <span id="checkBoxImg"></span>
+        </label>
+
+    </div>
     <H1>Minesweeper</H1>
-    <div class="container"> 
-        <div class="containerContent"> 
+    <div class="container">
+        <div id="confetti"></div>
+    </div>
+    <div class="container">
+        <div class="containerContent">
             <button id=newBoardButton>New Game</button>
         </div>
-        <div class="containerContent" id="counterStorage"> 
+        <div class="containerContent" id="counterStorage">
             <div id="mineCount">Mines:</div>
             <p>
-                <div id="flagCount">flags:</div>
-            
+            <div id="flagCount">flags:</div>
+
         </div>
         <div class="containerContent">
             <div id="timer">Timer: 0:00</div>
         </div>
+        
     </div>
 
     <div id="container">
