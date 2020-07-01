@@ -173,12 +173,10 @@ module.exports = {
             }
         }
         if (firstClicked === false) {
-            console.log('clicked board');
             const { board, state } = this.clickCell(oldBoard, inputRow, inputCol);
             return { board, state };
         }
         while (safeBoard === false) {
-            console.log('testing to see if board is safe');
             const { board, state } = this.clickCell(oldBoard, inputRow, inputCol);
             if (state === 'inProgress') {
                 return { board, state };
