@@ -219,13 +219,25 @@ function updateGrid(board) {
 function enableClicks() {
     $('#grid:has(td)').mouseup(function(event) {
         const clickedCell = $(event.target).closest('td');
-
-        if (clickedCell[0].innerHTML == '' || clickedCell[0].innerHTML == '🚩') {
+        // if cell is blank
+        if (clickedCell[0].innerHTML == '') {
             switch (event.which) {
                 case 1:
                     // left
                     clickCell(clickedCell[0].parentNode.rowIndex, clickedCell[0].cellIndex);
                     break;
+                case 3:
+                    // right
+                    flagCell(clickedCell[0].parentNode.rowIndex, clickedCell[0].cellIndex);
+                    break;
+                default:
+                    // anything else
+                    break;
+            }
+        }
+        // if cell is flagged
+        if (clickedCell[0].innerHTML == '🚩') {
+            switch (event.which) {
                 case 3:
                     // right
                     flagCell(clickedCell[0].parentNode.rowIndex, clickedCell[0].cellIndex);
