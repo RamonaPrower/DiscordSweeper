@@ -1,10 +1,9 @@
 /* eslint-disable no-undef */
 const io = require('socket.io-client');
 window.$ = require('jquery');
-const { Howl, Howler } = require('howler');
+const { Howl } = require('howler');
 const { confetti } = require('dom-confetti');
 const { DuckTimer } = require('duck-timer');
-const { min } = require('moment');
 const timer = new DuckTimer({ interval: 1000 });
 
 // setup
@@ -48,7 +47,7 @@ let globalState;
 let flagCounter;
 const params = new URLSearchParams(document.location.search.substring(1));
 const tag = params.get('h');
-const socket = io('/sp');
+const socket = io(`/sp?tag=${tag}`);
 $('#newBoardButton').click(() => {
     newBoard();
 });
@@ -82,8 +81,11 @@ if (currentTheme) {
     }
 }
 
+setInterval(function() {
+    socket.emit('keepAlive');
+}, 5000);
 
-socket.emit('getBoard', tag, (board, state, mines) => {
+socket.emit('getBoard', (board, state, mines) => {
     publicBoard = board;
     globalState = state;
     initialMines(mines);
@@ -259,7 +261,7 @@ function disableClicks() {
 }
 function clickCell(x, y) {
     disableClicks();
-    socket.emit('boardClick', x, y, tag, (board, state) => {
+    socket.emit('boardClick', x, y, (board, state) => {
         globalState = state;
         if (state === 'inProgress') {
             updateGrid(board);
@@ -286,14 +288,14 @@ function clickCell(x, y) {
 }
 function flagCell(x, y) {
     disableClicks();
-    socket.emit('flagClick', x, y, tag, (board, state) => {
+    socket.emit('flagClick', x, y, (board, state) => {
         // generateGrid(board);
         updateGrid(board);
     });
 }
 function newBoard() {
     disableClicks();
-    socket.emit('newBoard', tag, globalState, (board) => {
+    socket.emit('newBoard', globalState, (board) => {
         unblurGrid();
         generateGrid(board);
     });

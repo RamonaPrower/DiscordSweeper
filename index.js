@@ -22,6 +22,7 @@ const minesweeperBoard = require('./utils/minesweeper/minesweeperBoard');
 const { getLinkObject } = require('./utils/common');
 const discordSync = require('./utils/discord/discordSync');
 const storageHandler = require('./utils/storage/storageHandler');
+const connectionCheck = require('./utils/security/connectionCheck');
 
 // start static distribution
 app.use(static('dist'));
@@ -64,20 +65,36 @@ app.get('/mine', async (req, res) => {
         res.sendFile(__dirname + '/dist/index.html');
         return;
     }
+    const connected = connectionCheck.get(req.query.h);
+    if (connected) {
+        res.sendFile(__dirname + '/dist/index.html');
+        return;
+    }
     res.sendFile(__dirname + '/dist/mine.html');
 });
 
 // start of Karen
 // she speaks to the managers
 
+io.use((socket, next) => {
+    const token = socket.handshake.query.tag;
+    const check = connectionCheck.get(token);
+    if (check) {
+       return next(new Error ('board already connected'));
+    }
+    return next();
+});
+
 io.of('/sp').on('connection', (socket) => {
-    socket.on('getBoard', (tag, fn) => {
+    const tag = socket.handshake.query.tag;
+    connectionCheck.set(tag);
+    socket.on('getBoard', (fn) => {
         const res = storageHandler.get(tag);
         if (!res) return;
         const cleaned = boardClean.cleanToWeb(res.board);
         fn(cleaned, res.state, res.mines);
     });
-    socket.on('boardClick', async (x, y, tag, fn) => {
+    socket.on('boardClick', async (x, y, fn) => {
         let res = storageHandler.get(tag);
         if (!res || res.state !== 'inProgress') {
             return;
@@ -92,7 +109,7 @@ io.of('/sp').on('connection', (socket) => {
         discordSync.sp.updateBoard(message.message, res);
         fn(cleaned, state);
     });
-    socket.on('flagClick', async (x, y, tag, fn) => {
+    socket.on('flagClick', async (x, y, fn) => {
         let res = storageHandler.get(tag);
         if (!res || res.state !== 'inProgress') {
             return;
@@ -107,7 +124,7 @@ io.of('/sp').on('connection', (socket) => {
         discordSync.sp.updateBoard(message.message, res);
         fn(cleaned, state);
     });
-    socket.on('newBoard', async (tag, state, fn) => {
+    socket.on('newBoard', async (state, fn) => {
         let res = storageHandler.get(tag);
         if (!res) return;
         const newBoard = minesweeperBoard.generate(res.difficulty);
@@ -126,6 +143,12 @@ io.of('/sp').on('connection', (socket) => {
         discordSync.sp.updateBoard(message.message, res);
         fn(cleaned, res.state);
 
+    });
+    socket.on('keepAlive', () => {
+        connectionCheck.set(socket.handshake.query.tag);
+    });
+    socket.on('disconnect', () => {
+        connectionCheck.del(tag);
     });
 });
 
