@@ -5,8 +5,11 @@ const minesweeperDiscord = require('../../utils/minesweeper/minesweeperDiscord')
 module.exports = {
 	execute(message) {
         let board;
-        if (message.content.endsWith('medium')) {
-            board = MinesweeperBoard.generate('medium');
+        if (message.content.endsWith('easy')) {
+            board = MinesweeperBoard.generate('easy');
+        }
+        else if (message.content.endsWith('hard')) {
+            board = MinesweeperBoard.generate('hard');
         }
         else {
             board = MinesweeperBoard.generate();
@@ -17,11 +20,11 @@ module.exports = {
 };
 
 module.exports.info = {
-	name: 'minesweeper',
-	description: 'minesweeper generator code',
+	name: 'local minesweeper',
+	description: 'locally generates a board',
 	summon: '@ minesweeper',
 };
 module.exports.settings = {
-	regexp: /mine/mi,
+	regexp: /\blocal\b/mi,
 	tag: 'minesweeper',
 };

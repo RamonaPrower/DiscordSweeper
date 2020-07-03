@@ -1,12 +1,20 @@
+const difficulties = require('../difficulties.json');
+
 module.exports = {
-    generate(difficulty) {
-        let row = 5;
-        let col = 5;
-        let mines = 4;
-        if (difficulty === 'medium') {
-            col = 10;
-            row = 10;
-            mines = 10;
+    generate(inputDifficulty) {
+        const difficulty = inputDifficulty ? inputDifficulty : 'medium';
+        let row = difficulties.medium.rows;
+        let col = difficulties.medium.col;
+        let mines = difficulties.medium.mines;
+        if (difficulty === 'easy') {
+            col = difficulties.easy.col;
+            row = difficulties.easy.rows;
+            mines = difficulties.easy.mines;
+        }
+        if (difficulty === 'hard') {
+            col = difficulties.hard.col;
+            row = difficulties.hard.rows;
+            mines = difficulties.hard.mines;
         }
         // generate board
         const board = [...Array(row)].map(() => Array(col));
@@ -65,13 +73,6 @@ module.exports = {
                 }
             }
         }
-        for (const row of board) {
-            for (const cell of row) {
-                if (cell.revealed === true) {
-                    freshBoard = false;
-                }
-            }
-        }
         actuallyClickCell(inputRow, inputCol);
         while (toClick.length >= 1) {
             // removes dupes
@@ -84,7 +85,7 @@ module.exports = {
         function revealMines() {
             for (let i = 0; i < board.length; i++) {
                 for (let j = 0; j < board[i].length; j++) {
-                    if(board[i][j].mine === true && board[i][j].revealed === false) {
+                    if (board[i][j].mine === true && board[i][j].revealed === false) {
                         board[i][j].revealed = true;
                     }
                 }
@@ -94,10 +95,10 @@ module.exports = {
         let levelFailed = false;
         for (let i = 0; i < board.length; i++) {
             for (let j = 0; j < board[i].length; j++) {
-                if(board[i][j].mine === false && board[i][j].revealed === false) {
+                if (board[i][j].mine === false && board[i][j].revealed === false) {
                     levelComplete = false;
                 }
-                if(board[i][j].mine === true && board[i][j].revealed === true) {
+                if (board[i][j].mine === true && board[i][j].revealed === true) {
                     levelComplete = false;
                     levelFailed = true;
                     revealMines();
@@ -122,13 +123,13 @@ module.exports = {
         if (board[inputRow][inputCol].flagged === true) {
             board[inputRow][inputCol].flagged = false;
         }
-        else{
+        else {
             board[inputRow][inputCol].flagged = true;
         }
         function revealMines() {
             for (let i = 0; i < board.length; i++) {
                 for (let j = 0; j < board[i].length; j++) {
-                    if(board[i][j].mine === true && board[i][j].revealed === false) {
+                    if (board[i][j].mine === true && board[i][j].revealed === false) {
                         board[i][j].revealed = true;
                     }
                 }
@@ -138,10 +139,10 @@ module.exports = {
         let levelFailed = false;
         for (let i = 0; i < board.length; i++) {
             for (let j = 0; j < board[i].length; j++) {
-                if(board[i][j].mine === false && board[i][j].revealed === false) {
+                if (board[i][j].mine === false && board[i][j].revealed === false) {
                     levelComplete = false;
                 }
-                if(board[i][j].mine === true && board[i][j].revealed === true) {
+                if (board[i][j].mine === true && board[i][j].revealed === true) {
                     levelComplete = false;
                     levelFailed = true;
                     revealMines();
@@ -184,6 +185,48 @@ module.exports = {
             else {
                 oldBoard = this.generate(difficulty);
             }
+        }
+    },
+    chordCell(board, inputRow, inputCol) {
+        let flagCount = 0;
+        const hiddenCells = [];
+        let valid = false;
+        const rootCell = board[inputRow][inputCol];
+        if (board[inputRow][inputCol].revealed === true && board[inputRow][inputCol].minecount > 0) {
+            for (let newRow = Math.max(inputRow - 1, 0); newRow <= Math.min(inputRow + 1, board.length - 1); newRow++) {
+                for (let newCol = Math.max(inputCol - 1, 0); newCol <= Math.min(inputCol + 1, board.length - 1); newCol++) {
+                    const newCell = board[newRow][newCol];
+                    if (newCell.revealed === false && newCell.flagged === false) {
+                        hiddenCells.push([newRow, newCol]);
+                    }
+                    else if (newCell.revealed === false && newCell.flagged === true) {
+                        flagCount++;
+                    }
+                }
+            }
+        }
+        if (hiddenCells.length === 0) {
+            const state = 'inProgress';
+            return { board, state, valid };
+        }
+        if (rootCell.minecount === flagCount && rootCell.minecount !== 0 && hiddenCells.length !== 0) {
+            // valid chord
+            valid = true;
+            let tempboard = board;
+            let tempState;
+            for (const arr of hiddenCells) {
+                const { board: temptempboard, state } = this.clickCell(tempboard, arr[0], arr[1]);
+                tempboard = temptempboard;
+                tempState = state;
+                if (tempState !== 'inProgress') {
+                    return { tempboard, tempState, valid };
+                }
+            }
+            return { tempboard, tempState, valid };
+        }
+        else {
+            const state = 'inProgress';
+            return { board, state, valid };
         }
     },
 };

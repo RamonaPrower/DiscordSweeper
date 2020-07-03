@@ -1,10 +1,9 @@
 /* eslint-disable no-undef */
 const io = require('socket.io-client');
 window.$ = require('jquery');
-const { Howl, Howler } = require('howler');
 const { confetti } = require('dom-confetti');
 const { DuckTimer } = require('duck-timer');
-const { min } = require('moment');
+const { flip, bell, boom, victory, error } = require('./sounds');
 const timer = new DuckTimer({ interval: 1000 });
 
 // setup
@@ -21,69 +20,23 @@ const config = {
     height: '20px',
     perspective: '0px',
     colors: ['#a864fd', '#29cdff', '#78ff44', '#ff718d', '#fdff6a'],
-  };
-
-const flip = new Howl({
-    src: ['/sounds/click.wav'],
-    volume: 0.3,
-});
-
-const boom = new Howl({
-    src: ['/sounds/boom.wav'],
-    volume: 0.2,
-});
-
-const bell = new Howl({
-    src: ['/sounds/flag.wav'],
-    volume: 0.3,
-});
-
-const victory = new Howl({
-    src: ['/sounds/victory.mp3'],
-    volume: 0.3,
-});
+};
 
 let publicBoard;
 let globalState;
 let flagCounter;
 const params = new URLSearchParams(document.location.search.substring(1));
 const tag = params.get('h');
-const socket = io('/sp');
+const socket = io(`/sp?tag=${tag}`);
 $('#newBoardButton').click(() => {
     newBoard();
 });
 
-const toggle = document.querySelector('.theme input');
-const toggleSpan = document.querySelector('#checkBoxImg');
+setInterval(function() {
+    socket.emit('keepAlive');
+}, 5000);
 
-function switchTheme(tog) {
-    if (tog.target.checked) {
-        document.documentElement.setAttribute('data-theme', 'dark');
-        localStorage.setItem('theme', 'dark');
-        toggleSpan.innerHTML = '<i class="far fa-lightbulb"></i>';
-    }
-    else {
-        document.documentElement.setAttribute('data-theme', 'light');
-        localStorage.setItem('theme', 'light');
-        toggleSpan.innerHTML = '<i class="fas fa-lightbulb"></i>';
-    }
-}
-toggle.addEventListener('change', switchTheme, false);
-const currentTheme = localStorage.getItem('theme') ? localStorage.getItem('theme') : 'light';
-
-if (currentTheme) {
-    document.documentElement.setAttribute('data-theme', currentTheme);
-    if (currentTheme === 'dark') {
-        toggle.checked = true;
-        toggleSpan.innerHTML = '<i class="far fa-lightbulb"></i>';
-    }
-    else {
-        toggleSpan.innerHTML = '<i class="fas fa-lightbulb"></i>';
-    }
-}
-
-
-socket.emit('getBoard', tag, (board, state, mines) => {
+socket.emit('getBoard', (board, state, mines) => {
     publicBoard = board;
     globalState = state;
     initialMines(mines);
@@ -120,7 +73,6 @@ function generateGrid(board) {
                 cell.className = 'clicked';
             }
             else if (board[i][j].revealed === true && board[i][j].mine === true) {
-                flagCounter++;
                 cell.className = 'mine';
             }
             else if (board[i][j].revealed === false && board[i][j].flagged === true) {
@@ -217,6 +169,9 @@ function updateGrid(board) {
     updateFlagCounter();
 }
 function enableClicks() {
+    let leftButton = false;
+    let rightButton = false;
+
     $('#grid:has(td)').mouseup(function(event) {
         const clickedCell = $(event.target).closest('td');
         // if cell is blank
@@ -247,19 +202,61 @@ function enableClicks() {
                     break;
             }
         }
-
+        if (clickedCell[0].className == 'clicked') {
+            switch (event.which) {
+                case 1:
+                    // left
+                    leftButton = false;
+                    break;
+                case 3:
+                    // right
+                    rightButton = false;
+                    break;
+                default:
+                    // anything else
+                    break;
+            }
+        }
     });
-    $('#grid:has(td)').bind('contextmenu', function(e) {
+    $('#grid:has(td)').mousedown(function(event) {
+        const clickedCell = $(event.target).closest('td');
+        if (clickedCell[0].className == 'clicked' && rightButton === false) {
+            switch (event.which) {
+                case 1:
+                    // left
+                    leftButton = true;
+                    break;
+                case 3:
+                    // right
+                    rightButton = true;
+                    break;
+                default:
+                    // anything else
+                    break;
+            }
+        }
+        else if (clickedCell[0].className === 'clicked' && rightButton === true) {
+            switch (event.which) {
+                case 1:
+                    // left
+                    leftButton = true;
+                    chordCell(clickedCell[0].parentNode.rowIndex, clickedCell[0].cellIndex);
+                    break;
+            }
+        }
+    });
+    $('#grid:has(td)').bind('contextmenu', function() {
         return false;
     });
 }
 function disableClicks() {
     $('#grid:has(td)').off('mouseup');
+    $('#grid:has(td)').off('mousedown');
     $('#grid:has(td)').css;
 }
 function clickCell(x, y) {
     disableClicks();
-    socket.emit('boardClick', x, y, tag, (board, state) => {
+    socket.emit('boardClick', x, y, (board, state) => {
         globalState = state;
         if (state === 'inProgress') {
             updateGrid(board);
@@ -286,14 +283,56 @@ function clickCell(x, y) {
 }
 function flagCell(x, y) {
     disableClicks();
-    socket.emit('flagClick', x, y, tag, (board, state) => {
+    socket.emit('flagClick', x, y, (board) => {
         // generateGrid(board);
         updateGrid(board);
     });
 }
+function chordCell(x, y) {
+    disableClicks();
+    socket.emit('chordClick', x, y, (board, state, valid) => {
+        globalState = state;
+        if (valid === true) {
+            if (state === 'inProgress') {
+                updateGrid(board);
+            }
+            else if (state === 'failed') {
+                boom.play();
+                generateGrid(board);
+                disableClicks();
+                blurGrid();
+                timer.stop();
+                showFailStatus();
+            }
+            else {
+                generateGrid(board);
+                const container = document.getElementById('confetti');
+                confetti(container, config);
+                victory.play();
+                disableClicks();
+                blurGrid();
+                timer.stop();
+                showWinStatus();
+            }
+        }
+        else {
+            console.log('not valid chord');
+            enableClicks();
+            const grid = document.getElementById('grid');
+            const row = grid.rows[x];
+            const cell = row.cells[y];
+            error.play();
+            cell.className = 'mine';
+            setTimeout(() => {
+                cell.className = 'clicked';
+            }, 100);
+        }
+
+    });
+}
 function newBoard() {
     disableClicks();
-    socket.emit('newBoard', tag, globalState, (board) => {
+    socket.emit('newBoard', globalState, (board) => {
         unblurGrid();
         generateGrid(board);
     });
@@ -313,7 +352,6 @@ function initialMines(mines) {
     const newStr = `mines: ${mines}`;
     $('#mineCount').text(newStr);
 }
-
 function clearStatus() {
     $('#status').hide();
 }

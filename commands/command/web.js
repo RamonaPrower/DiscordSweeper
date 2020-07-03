@@ -4,6 +4,7 @@ const MinesweeperBoard = require('../../utils/minesweeper/minesweeperBoard');
 const { nanoid } = require('nanoid');
 const minesweeperDiscord = require('../../utils/minesweeper/minesweeperDiscord');
 const storageHandler = require('../../utils/storage/storageHandler');
+const difficulties = require('../../utils/difficulties.json');
 
 // exports
 module.exports = {
@@ -11,15 +12,20 @@ module.exports = {
         let board;
         let difficulty;
         let mines;
-        if (message.content.endsWith('medium')) {
-            board = MinesweeperBoard.generate('medium');
-            difficulty = 'medium';
-            mines = 10;
+        if (message.content.endsWith('easy')) {
+            board = MinesweeperBoard.generate('easy');
+            difficulty = 'easy';
+            mines = difficulties.easy.mines;
+        }
+        else if (message.content.endsWith('hard')) {
+            board = MinesweeperBoard.generate('hard');
+            difficulty = 'hard';
+            mines = difficulties.hard.mines;
         }
         else {
             board = MinesweeperBoard.generate();
-            difficulty = 'easy';
-            mines = 4;
+            difficulty = 'medium';
+            mines = difficulties.medium.mines;
         }
         const genCode = nanoid(14);
         if (process.env.NODE_ENV !== 'production') {
@@ -31,6 +37,7 @@ module.exports = {
             }
  catch (error) {
                 await message.channel.send('i need to be able to send you a DM for the link');
+                return;
             }
 
         }
