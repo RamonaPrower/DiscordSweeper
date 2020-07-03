@@ -1,0 +1,18 @@
+{
+    "easy": {
+        "rows": 7,
+        "col": 7,
+        "mines": 10
+    },
+    "medium": {
+        "rows": 11,
+        "col": 11,
+        "mines": 25
+    },
+    "hard": {
+        "rows": 14,
+        "col": 14,
+        "mines": 40
+    }
+    
+}

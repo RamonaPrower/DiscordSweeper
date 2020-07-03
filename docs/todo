@@ -1,4 +1,16 @@
-backup to db
-chords - both click around a number reveals all non-flagged ones
+backup to db?
+
+-Pros
+persistence on reboot
+    - you can't play the game when the server is down anyway
+    - restarts will be infrequent
+    - connection time alive won't be accurate
+    - 
+-cons
+like, so much dumb checking to do in the background
+    -cmon girl, it's like, two files need to be updated, 2 schemas and you're synced
+latency to board will be further increased
+    -only on board connection, 
+
 
 burying

@@ -2,6 +2,16 @@
 <html lang="en">
 
 <head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-171571767-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'UA-171571767-1');
+    </script>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/css/minesweeper.css">
@@ -33,7 +43,7 @@
         <div class="containerContent">
             <div id="timer">Timer: 0:00</div>
         </div>
-        
+
     </div>
 
     <div id="container">
@@ -43,6 +53,7 @@
         </table>
     </div>
     <script src="/js/minesweeper.js"></script>
+    <script src="/js/theme.js"></script>
 </body>
 
 </html>

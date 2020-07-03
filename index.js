@@ -124,6 +124,25 @@ io.of('/sp').on('connection', (socket) => {
         discordSync.sp.updateBoard(message.message, res);
         fn(cleaned, state);
     });
+    socket.on('chordClick', async (x, y, fn) => {
+        let res = storageHandler.get(tag);
+        if (!res || res.state !== 'inProgress') {
+            return;
+        }
+        const { tempboard: board, tempState: state, valid } = minesweeperBoard.chordCell(res.board, x, y);
+        if (!valid) {
+            fn(null, 'inProgress', valid);
+            return;
+        }
+        res.board = board;
+        res.state = state;
+        storageHandler.set(tag, res);
+        const cleaned = boardClean.cleanToWeb(board);
+        const message = await getLinkObject(res.messageLink, client);
+        res = storageHandler.get(tag);
+        discordSync.sp.updateBoard(message.message, res);
+        fn(cleaned, state, valid);
+    });
     socket.on('newBoard', async (state, fn) => {
         let res = storageHandler.get(tag);
         if (!res) return;

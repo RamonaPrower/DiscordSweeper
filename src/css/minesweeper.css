@@ -9,7 +9,7 @@
   --newBoardText: white;
   --newBoardHoverBg: #ffffff;
   --gridBackground: #999999;
-  --gridBorder:white;
+  --gridBorder:rgb(201, 201, 201);
   --gridBackgroundHover: #bdbcbc;
   --gridBackgroundClicked: #ffffff;
   --gridBackgroundMine: #ff0000;
@@ -98,8 +98,10 @@ BODY {
   #grid {
     margin-left: auto;
     margin-right: auto;
+    margin-top: auto;
+    margin-bottom: auto;
     width: fit-content;
-
+    height: fit-content;
     align-items: center;
     justify-content: center;
     z-index: 2;
@@ -125,9 +127,10 @@ BODY {
   
   #grid TR TD{
     border:1px solid var(--gridBorder);
+    border-radius: 5px;
     background: var(--gridBackground);
-    width: 48px;
-    height: 48px;
+    width: 40px;
+    height: 40px;
     transform: rotateY(180deg);
     text-align: center;
     transition: all 75ms;
