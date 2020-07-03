@@ -73,7 +73,6 @@ function generateGrid(board) {
                 cell.className = 'clicked';
             }
             else if (board[i][j].revealed === true && board[i][j].mine === true) {
-                flagCounter++;
                 cell.className = 'mine';
             }
             else if (board[i][j].revealed === false && board[i][j].flagged === true) {
