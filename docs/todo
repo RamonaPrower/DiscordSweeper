@@ -12,5 +12,12 @@ like, so much dumb checking to do in the background
 latency to board will be further increased
     -only on board connection, 
 
+board will need to be dumped and resynced on start, heroku has daily restarts >:(
+
+question mark
+
+rewrite mouseclicks
+
+rewrite updating discord messages
 
 burying
