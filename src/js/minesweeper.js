@@ -174,7 +174,9 @@ function enableClicks() {
 
     $('#grid:has(td)').mouseup(function(event) {
         const clickedCell = $(event.target).closest('td');
-        // if cell is blank
+        // errors flood the console if the user clicks *just* outside of a cell
+        // this stops that (hopefully);
+        if (clickedCell.length === 0) return;
         if (clickedCell[0].innerHTML == '') {
             switch (event.which) {
                 case 1:
@@ -220,6 +222,9 @@ function enableClicks() {
     });
     $('#grid:has(td)').mousedown(function(event) {
         const clickedCell = $(event.target).closest('td');
+         // errors flood the console if the user clicks *just* outside of a cell
+        // this stops that (hopefully);
+        if (clickedCell.length === 0) return;
         if (clickedCell[0].className == 'clicked' && rightButton === false) {
             switch (event.which) {
                 case 1:
@@ -363,3 +368,42 @@ function showWinStatus() {
     $('#status').show();
     $('#status').text('Victory! :)');
 }
+
+function log(str) {
+    console.log(str);
+}
+
+socket.on('connect', () => {
+    log('connection event fired');
+});
+
+socket.on('connect_error', (err) => {
+    log('connection_error event fired, ' + err);
+});
+
+socket.on('connect_timeout', (err) => {
+    log('connection_timeout event fired, ' + err);
+});
+
+socket.on('error', (err) => {
+    log('error event fired, ' + err);
+});
+
+socket.on('disconnect', (err) => {
+    log('disconnect event fired, ' + err);
+});
+socket.on('reconnect', (attemptNumber) => {
+    log('reconnect event fired, attempt ' + attemptNumber);
+  });
+  socket.on('reconnect_attempt', (attemptNumber) => {
+    log('reconnect_attempt event fired, attempt' + attemptNumber);
+  });
+  socket.on('reconnecting', (attemptNumber) => {
+    log('reconnecting event fired, attempt ' + attemptNumber);
+  });
+  socket.on('reconnect_error', (err) => {
+    log('reconnect error event fired, err is ' + err);
+  });
+  socket.on('reconnect_failed', () => {
+   log('reconnected failed event fired');
+  });
