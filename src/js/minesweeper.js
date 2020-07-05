@@ -3,7 +3,7 @@ const io = require('socket.io-client');
 window.$ = require('jquery');
 const { confetti } = require('dom-confetti');
 const { DuckTimer } = require('duck-timer');
-const { flip, bell, boom, victory, error } = require('./sounds');
+const { flip, bell, boom, victory, error, question } = require('./sounds');
 const timer = new DuckTimer({ interval: 1000 });
 
 // setup
@@ -80,6 +80,10 @@ function generateGrid(board) {
                 cell.innerHTML = '🚩';
                 cell.className = 'flag';
             }
+            else if (board[i][j].revealed === false && board[i][j].question === true) {
+                cell.innerHTML = '❓';
+                cell.className = 'question';
+            }
         }
     }
     timer.onInterval(res => {
@@ -98,6 +102,7 @@ function generateGrid(board) {
 function updateGrid(board) {
     const grid = document.getElementById('grid');
     let flips = 0;
+    console.log(board);
     flagCounter = 0;
     for (let i = 0; i < board.length; i++) {
         const row = grid.rows[i];
@@ -148,6 +153,20 @@ function updateGrid(board) {
                 }
 
             }
+            else if (board[i][j].revealed === false && board[i][j].question === true) {
+                if (cell.className == 'flag') {
+                    question.play();
+                    cell.className = 'half';
+                    setTimeout(() => {
+                        cell.innerHTML = '❓';
+                        cell.className = 'question';
+                    }, 65);
+                }
+                else {
+                    cell.innerHTML = '❓';
+                    cell.className = 'question';
+                }
+            }
             else {
                 cell.innerHTML = '';
                 cell.className = '';
@@ -193,15 +212,21 @@ function enableClicks() {
             }
         }
         // if cell is flagged
-        if (clickedCell[0].innerHTML == '🚩') {
+        else if (clickedCell[0].innerHTML == '🚩') {
             switch (event.which) {
                 case 3:
                     // right
-                    flagCell(clickedCell[0].parentNode.rowIndex, clickedCell[0].cellIndex);
+                    questionCell(clickedCell[0].parentNode.rowIndex, clickedCell[0].cellIndex);
                     break;
                 default:
                     // anything else
                     break;
+            }
+        }
+        else if (clickedCell[0].innerHTML == '❓') {
+            switch (event.which) {
+                case 3:
+                    questionCell(clickedCell[0].parentNode.rowIndex, clickedCell[0].cellIndex);
             }
         }
         if (clickedCell[0].className == 'clicked') {
@@ -222,7 +247,7 @@ function enableClicks() {
     });
     $('#grid:has(td)').mousedown(function(event) {
         const clickedCell = $(event.target).closest('td');
-         // errors flood the console if the user clicks *just* outside of a cell
+        // errors flood the console if the user clicks *just* outside of a cell
         // this stops that (hopefully);
         if (clickedCell.length === 0) return;
         if (clickedCell[0].className == 'clicked' && rightButton === false) {
@@ -290,6 +315,12 @@ function flagCell(x, y) {
     disableClicks();
     socket.emit('flagClick', x, y, (board) => {
         // generateGrid(board);
+        updateGrid(board);
+    });
+}
+function questionCell(x, y) {
+    disableClicks();
+    socket.emit('questionClick', x, y, (board) => {
         updateGrid(board);
     });
 }
@@ -394,16 +425,16 @@ socket.on('disconnect', (err) => {
 });
 socket.on('reconnect', (attemptNumber) => {
     log('reconnect event fired, attempt ' + attemptNumber);
-  });
-  socket.on('reconnect_attempt', (attemptNumber) => {
+});
+socket.on('reconnect_attempt', (attemptNumber) => {
     log('reconnect_attempt event fired, attempt' + attemptNumber);
-  });
-  socket.on('reconnecting', (attemptNumber) => {
+});
+socket.on('reconnecting', (attemptNumber) => {
     log('reconnecting event fired, attempt ' + attemptNumber);
-  });
-  socket.on('reconnect_error', (err) => {
+});
+socket.on('reconnect_error', (err) => {
     log('reconnect error event fired, err is ' + err);
-  });
-  socket.on('reconnect_failed', () => {
-   log('reconnected failed event fired');
-  });
+});
+socket.on('reconnect_failed', () => {
+    log('reconnected failed event fired');
+});

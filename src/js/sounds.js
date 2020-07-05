@@ -24,3 +24,8 @@ const error = new Howl({
     volume: 0.3,
 });
 exports.error = error;
+const question = new Howl({
+    src: ['/sounds/question.wav'],
+    volume: 0.2,
+});
+exports.question = question;

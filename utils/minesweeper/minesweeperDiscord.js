@@ -49,11 +49,14 @@ module.exports = {
         for (const row of board) {
             let rowMessage = '';
             for (const entry of row) {
-                if (entry.revealed === false && entry.flagged === false) {
+                if (entry.revealed === false && entry.flagged === false && entry.question === false) {
                     rowMessage = rowMessage + '🟦';
                 }
                 else if (entry.revealed === false && entry.flagged === true) {
                     rowMessage = rowMessage + '🚩';
+                }
+                else if (entry.revealed === false && entry.question === true) {
+                    rowMessage = rowMessage + '❓';
                 }
                 else if (entry.mine === true && entry.revealed === true) {
                     rowMessage = rowMessage + '💥';
