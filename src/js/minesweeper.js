@@ -102,7 +102,6 @@ function generateGrid(board) {
 function updateGrid(board) {
     const grid = document.getElementById('grid');
     let flips = 0;
-    console.log(board);
     flagCounter = 0;
     for (let i = 0; i < board.length; i++) {
         const row = grid.rows[i];
@@ -278,11 +277,35 @@ function enableClicks() {
     $('#grid:has(td)').bind('contextmenu', function() {
         return false;
     });
+    $('#grid:has(td)').bind('long-press', function(event) {
+        const clickedCell = $(event.target).closest('td');
+        // errors flood the console if the user clicks *just* outside of a cell
+        // this stops that (hopefully);
+        if (clickedCell.length === 0) return;
+        if (clickedCell[0].innerHTML == '') {
+                    flagCell(clickedCell[0].parentNode.rowIndex, clickedCell[0].cellIndex);
+                    return;
+            }
+        // if cell is flagged
+        else if (clickedCell[0].innerHTML == '🚩') {
+                    questionCell(clickedCell[0].parentNode.rowIndex, clickedCell[0].cellIndex);
+                    return;
+        }
+        else if (clickedCell[0].innerHTML == '❓') {
+                    questionCell(clickedCell[0].parentNode.rowIndex, clickedCell[0].cellIndex);
+                    return;
+        }
+        else {
+            chordCell(clickedCell[0].parentNode.rowIndex, clickedCell[0].cellIndex);
+            return;
+        }
+    });
 }
 function disableClicks() {
     $('#grid:has(td)').off('mouseup');
     $('#grid:has(td)').off('mousedown');
     $('#grid:has(td)').css;
+    $('#grid:has(td)').off('long-press');
 }
 function clickCell(x, y) {
     disableClicks();
@@ -352,7 +375,6 @@ function chordCell(x, y) {
             }
         }
         else {
-            console.log('not valid chord');
             enableClicks();
             const grid = document.getElementById('grid');
             const row = grid.rows[x];

@@ -4,10 +4,8 @@ boards will need to be dumped and resynced on start, current users will need to 
 
 handle downtime/dropped connection on user end
 
-question mark
-
 rewrite mouseclicks
 
-rewrite updating discord messages
+rewrite updating discord messages - will need second pass
 
 burying
