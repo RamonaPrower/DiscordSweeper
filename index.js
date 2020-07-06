@@ -124,6 +124,21 @@ io.of('/sp').on('connection', (socket) => {
         discordSync.sp.updateBoard(message.message, res);
         fn(cleaned, state);
     });
+    socket.on('questionClick', async (x, y, fn) => {
+        let res = storageHandler.get(tag);
+        if (!res || res.state !== 'inProgress') {
+            return;
+        }
+        const { board, state } = minesweeperBoard.questionCell(res.board, x, y);
+        res.board = board;
+        res.state = state;
+        storageHandler.set(tag, res);
+        const cleaned = boardClean.cleanToWeb(board);
+        const message = await getLinkObject(res.messageLink, client);
+        res = storageHandler.get(tag);
+        discordSync.sp.updateBoard(message.message, res);
+        fn(cleaned, state);
+    });
     socket.on('chordClick', async (x, y, fn) => {
         let res = storageHandler.get(tag);
         if (!res || res.state !== 'inProgress') {

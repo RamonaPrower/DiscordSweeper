@@ -3,7 +3,7 @@ const io = require('socket.io-client');
 window.$ = require('jquery');
 const { confetti } = require('dom-confetti');
 const { DuckTimer } = require('duck-timer');
-const { flip, bell, boom, victory, error } = require('./sounds');
+const { flip, bell, boom, victory, error, question } = require('./sounds');
 const timer = new DuckTimer({ interval: 1000 });
 
 // setup
@@ -80,6 +80,10 @@ function generateGrid(board) {
                 cell.innerHTML = '🚩';
                 cell.className = 'flag';
             }
+            else if (board[i][j].revealed === false && board[i][j].question === true) {
+                cell.innerHTML = '❓';
+                cell.className = 'question';
+            }
         }
     }
     timer.onInterval(res => {
@@ -148,6 +152,20 @@ function updateGrid(board) {
                 }
 
             }
+            else if (board[i][j].revealed === false && board[i][j].question === true) {
+                if (cell.className == 'flag') {
+                    question.play();
+                    cell.className = 'half';
+                    setTimeout(() => {
+                        cell.innerHTML = '❓';
+                        cell.className = 'question';
+                    }, 65);
+                }
+                else {
+                    cell.innerHTML = '❓';
+                    cell.className = 'question';
+                }
+            }
             else {
                 cell.innerHTML = '';
                 cell.className = '';
@@ -174,7 +192,9 @@ function enableClicks() {
 
     $('#grid:has(td)').mouseup(function(event) {
         const clickedCell = $(event.target).closest('td');
-        // if cell is blank
+        // errors flood the console if the user clicks *just* outside of a cell
+        // this stops that (hopefully);
+        if (clickedCell.length === 0) return;
         if (clickedCell[0].innerHTML == '') {
             switch (event.which) {
                 case 1:
@@ -191,15 +211,21 @@ function enableClicks() {
             }
         }
         // if cell is flagged
-        if (clickedCell[0].innerHTML == '🚩') {
+        else if (clickedCell[0].innerHTML == '🚩') {
             switch (event.which) {
                 case 3:
                     // right
-                    flagCell(clickedCell[0].parentNode.rowIndex, clickedCell[0].cellIndex);
+                    questionCell(clickedCell[0].parentNode.rowIndex, clickedCell[0].cellIndex);
                     break;
                 default:
                     // anything else
                     break;
+            }
+        }
+        else if (clickedCell[0].innerHTML == '❓') {
+            switch (event.which) {
+                case 3:
+                    questionCell(clickedCell[0].parentNode.rowIndex, clickedCell[0].cellIndex);
             }
         }
         if (clickedCell[0].className == 'clicked') {
@@ -220,6 +246,9 @@ function enableClicks() {
     });
     $('#grid:has(td)').mousedown(function(event) {
         const clickedCell = $(event.target).closest('td');
+        // errors flood the console if the user clicks *just* outside of a cell
+        // this stops that (hopefully);
+        if (clickedCell.length === 0) return;
         if (clickedCell[0].className == 'clicked' && rightButton === false) {
             switch (event.which) {
                 case 1:
@@ -248,11 +277,35 @@ function enableClicks() {
     $('#grid:has(td)').bind('contextmenu', function() {
         return false;
     });
+    $('#grid:has(td)').bind('long-press', function(event) {
+        const clickedCell = $(event.target).closest('td');
+        // errors flood the console if the user clicks *just* outside of a cell
+        // this stops that (hopefully);
+        if (clickedCell.length === 0) return;
+        if (clickedCell[0].innerHTML == '') {
+                    flagCell(clickedCell[0].parentNode.rowIndex, clickedCell[0].cellIndex);
+                    return;
+            }
+        // if cell is flagged
+        else if (clickedCell[0].innerHTML == '🚩') {
+                    questionCell(clickedCell[0].parentNode.rowIndex, clickedCell[0].cellIndex);
+                    return;
+        }
+        else if (clickedCell[0].innerHTML == '❓') {
+                    questionCell(clickedCell[0].parentNode.rowIndex, clickedCell[0].cellIndex);
+                    return;
+        }
+        else {
+            chordCell(clickedCell[0].parentNode.rowIndex, clickedCell[0].cellIndex);
+            return;
+        }
+    });
 }
 function disableClicks() {
     $('#grid:has(td)').off('mouseup');
     $('#grid:has(td)').off('mousedown');
     $('#grid:has(td)').css;
+    $('#grid:has(td)').off('long-press');
 }
 function clickCell(x, y) {
     disableClicks();
@@ -288,6 +341,12 @@ function flagCell(x, y) {
         updateGrid(board);
     });
 }
+function questionCell(x, y) {
+    disableClicks();
+    socket.emit('questionClick', x, y, (board) => {
+        updateGrid(board);
+    });
+}
 function chordCell(x, y) {
     disableClicks();
     socket.emit('chordClick', x, y, (board, state, valid) => {
@@ -316,7 +375,6 @@ function chordCell(x, y) {
             }
         }
         else {
-            console.log('not valid chord');
             enableClicks();
             const grid = document.getElementById('grid');
             const row = grid.rows[x];
@@ -363,3 +421,42 @@ function showWinStatus() {
     $('#status').show();
     $('#status').text('Victory! :)');
 }
+
+function log(str) {
+    console.log(str);
+}
+
+socket.on('connect', () => {
+    log('connection event fired');
+});
+
+socket.on('connect_error', (err) => {
+    log('connection_error event fired, ' + err);
+});
+
+socket.on('connect_timeout', (err) => {
+    log('connection_timeout event fired, ' + err);
+});
+
+socket.on('error', (err) => {
+    log('error event fired, ' + err);
+});
+
+socket.on('disconnect', (err) => {
+    log('disconnect event fired, ' + err);
+});
+socket.on('reconnect', (attemptNumber) => {
+    log('reconnect event fired, attempt ' + attemptNumber);
+});
+socket.on('reconnect_attempt', (attemptNumber) => {
+    log('reconnect_attempt event fired, attempt' + attemptNumber);
+});
+socket.on('reconnecting', (attemptNumber) => {
+    log('reconnecting event fired, attempt ' + attemptNumber);
+});
+socket.on('reconnect_error', (err) => {
+    log('reconnect error event fired, err is ' + err);
+});
+socket.on('reconnect_failed', () => {
+    log('reconnected failed event fired');
+});

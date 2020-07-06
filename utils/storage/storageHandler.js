@@ -30,7 +30,7 @@ class storageHandler {
             if (time >= 30) {
                 this._data.delete(key);
                 qdCache.delete(key);
-                console.log(`deleted ${key} from cache`);
+                console.log(`deleted session ${key} from connection cache`);
             }
         });
     }
