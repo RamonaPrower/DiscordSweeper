@@ -90,7 +90,7 @@ BODY {
     font-size: 64px;
     position: absolute;
     width: 98%;
-    top: 50vh;
+    top: 40vh;
     overflow: hidden;
     z-index: 3;
     color: var(--status-font);
