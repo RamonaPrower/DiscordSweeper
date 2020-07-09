@@ -19,10 +19,11 @@ const io = require('socket.io')(http);
 const { static } = require('express');
 const boardClean = require('./utils/security/boardClean');
 const minesweeperBoard = require('./utils/minesweeper/minesweeperBoard');
-const { getLinkObject } = require('./utils/common');
+const { getLinkObject, deepClone } = require('./utils/common');
 const discordSync = require('./utils/discord/discordSync');
 const storageHandler = require('./utils/storage/storageHandler');
 const connectionCheck = require('./utils/security/connectionCheck');
+const mongoose = require('mongoose');
 
 // start static distribution
 app.use(static('dist'));
@@ -60,7 +61,7 @@ app.get('/', (req, res) => {
 });
 
 app.get('/mine', async (req, res) => {
-    const game = storageHandler.get(req.query.h);
+    const game = await storageHandler.get(req.query.h);
     if (!game) {
         res.sendFile(__dirname + '/dist/index.html');
         return;
@@ -88,59 +89,60 @@ io.use((socket, next) => {
 io.of('/sp').on('connection', (socket) => {
     const tag = socket.handshake.query.tag;
     connectionCheck.set(tag);
-    socket.on('getBoard', (fn) => {
-        const res = storageHandler.get(tag);
+    socket.on('getBoard', async (fn) => {
+        const res = await storageHandler.get(tag);
         if (!res) return;
-        const cleaned = boardClean.cleanToWeb(res.board);
+        // i have no idea what i'm doing
+        const cleaned = boardClean.cleanToWeb(deepClone(res.board));
         fn(cleaned, res.state, res.mines);
     });
     socket.on('boardClick', async (x, y, fn) => {
-        let res = storageHandler.get(tag);
+        let res = await storageHandler.get(tag);
         if (!res || res.state !== 'inProgress') {
             return;
         }
         const{ board, state } = minesweeperBoard.clickCellSafely(res.board, x, y, res.difficulty);
         res.board = board;
         res.state = state;
-        storageHandler.set(tag, res);
-        const cleaned = boardClean.cleanToWeb(board);
+        await storageHandler.set(tag, res);
+        const cleaned = boardClean.cleanToWeb(deepClone(board));
         const message = await getLinkObject(res.messageLink, client);
-        res = storageHandler.get(tag);
+        res = await storageHandler.get(tag);
         discordSync.sp.updateBoard(message.message, res);
         fn(cleaned, state);
     });
     socket.on('flagClick', async (x, y, fn) => {
-        let res = storageHandler.get(tag);
+        let res = await storageHandler.get(tag);
         if (!res || res.state !== 'inProgress') {
             return;
         }
         const { board, state } = minesweeperBoard.flagCell(res.board, x, y);
         res.board = board;
         res.state = state;
-        storageHandler.set(tag, res);
-        const cleaned = boardClean.cleanToWeb(board);
+        await storageHandler.set(tag, res);
+        const cleaned = boardClean.cleanToWeb(deepClone(board));
         const message = await getLinkObject(res.messageLink, client);
-        res = storageHandler.get(tag);
+        res = await storageHandler.get(tag);
         discordSync.sp.updateBoard(message.message, res);
         fn(cleaned, state);
     });
     socket.on('questionClick', async (x, y, fn) => {
-        let res = storageHandler.get(tag);
+        let res = await storageHandler.get(tag);
         if (!res || res.state !== 'inProgress') {
             return;
         }
         const { board, state } = minesweeperBoard.questionCell(res.board, x, y);
         res.board = board;
         res.state = state;
-        storageHandler.set(tag, res);
-        const cleaned = boardClean.cleanToWeb(board);
+        await storageHandler.set(tag, res);
+        const cleaned = boardClean.cleanToWeb(deepClone(board));
         const message = await getLinkObject(res.messageLink, client);
-        res = storageHandler.get(tag);
+        res = await storageHandler.get(tag);
         discordSync.sp.updateBoard(message.message, res);
         fn(cleaned, state);
     });
     socket.on('chordClick', async (x, y, fn) => {
-        let res = storageHandler.get(tag);
+        let res = await storageHandler.get(tag);
         if (!res || res.state !== 'inProgress') {
             return;
         }
@@ -151,15 +153,15 @@ io.of('/sp').on('connection', (socket) => {
         }
         res.board = board;
         res.state = state;
-        storageHandler.set(tag, res);
-        const cleaned = boardClean.cleanToWeb(board);
+        await storageHandler.set(tag, res);
+        const cleaned = boardClean.cleanToWeb(deepClone(board));
         const message = await getLinkObject(res.messageLink, client);
-        res = storageHandler.get(tag);
+        res = await storageHandler.get(tag);
         discordSync.sp.updateBoard(message.message, res);
         fn(cleaned, state, valid);
     });
     socket.on('newBoard', async (state, fn) => {
-        let res = storageHandler.get(tag);
+        let res = await storageHandler.get(tag);
         if (!res) return;
         const newBoard = minesweeperBoard.generate(res.difficulty);
         res.board = newBoard;
@@ -170,10 +172,10 @@ io.of('/sp').on('connection', (socket) => {
         else {
             res.wins++;
         }
-        storageHandler.set(tag, res);
-        const cleaned = boardClean.cleanToWeb(res.board);
+        await storageHandler.set(tag, res);
+        const cleaned = boardClean.cleanToWeb(deepClone(res.board));
         const message = await getLinkObject(res.messageLink, client);
-        res = storageHandler.get(tag);
+        res = await storageHandler.get(tag);
         discordSync.sp.updateBoard(message.message, res);
         fn(cleaned, res.state);
 
@@ -195,6 +197,19 @@ http.listen(port, () => {
 
 client.on('ready', () => {
     console.log(`I'm up, and i'm part of ${client.guilds.cache.size} servers`);
+    let db;
+    if (!config) {
+        db = process.env.MONGO_DB;
+    }
+    else {
+        db = config.db;
+    }
+    mongoose.connect(db, ({ useNewUrlParser: true, useUnifiedTopology: true }))
+    .then(() => {
+        console.log('Connection to MongoDB successfully established');
+    })
+    .catch(console.error);
+
 });
 
 if (!config) {

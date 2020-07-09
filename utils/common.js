@@ -29,4 +29,7 @@ module.exports = {
         obj.message = foundMessage;
         return obj;
     },
+    deepClone(obj) {
+        return JSON.parse(JSON.stringify(obj));
+    },
 };
