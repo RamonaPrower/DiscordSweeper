@@ -19,7 +19,7 @@ const io = require('socket.io')(http);
 const { static } = require('express');
 const boardClean = require('./utils/security/boardClean');
 const minesweeperBoard = require('./utils/minesweeper/minesweeperBoard');
-const { getLinkObject } = require('./utils/common');
+const { getLinkObject, deepClone } = require('./utils/common');
 const discordSync = require('./utils/discord/discordSync');
 const storageHandler = require('./utils/storage/storageHandler');
 const connectionCheck = require('./utils/security/connectionCheck');
@@ -93,7 +93,7 @@ io.of('/sp').on('connection', (socket) => {
         const res = await storageHandler.get(tag);
         if (!res) return;
         // i have no idea what i'm doing
-        const cleaned = boardClean.cleanToWeb(JSON.parse(JSON.stringify(res.board)));
+        const cleaned = boardClean.cleanToWeb(deepClone(res.board));
         fn(cleaned, res.state, res.mines);
     });
     socket.on('boardClick', async (x, y, fn) => {
@@ -105,7 +105,7 @@ io.of('/sp').on('connection', (socket) => {
         res.board = board;
         res.state = state;
         await storageHandler.set(tag, res);
-        const cleaned = boardClean.cleanToWeb(JSON.parse(JSON.stringify(board)));
+        const cleaned = boardClean.cleanToWeb(deepClone(board));
         const message = await getLinkObject(res.messageLink, client);
         res = await storageHandler.get(tag);
         discordSync.sp.updateBoard(message.message, res);
@@ -120,7 +120,7 @@ io.of('/sp').on('connection', (socket) => {
         res.board = board;
         res.state = state;
         await storageHandler.set(tag, res);
-        const cleaned = boardClean.cleanToWeb(JSON.parse(JSON.stringify(board)));
+        const cleaned = boardClean.cleanToWeb(deepClone(board));
         const message = await getLinkObject(res.messageLink, client);
         res = await storageHandler.get(tag);
         discordSync.sp.updateBoard(message.message, res);
@@ -135,7 +135,7 @@ io.of('/sp').on('connection', (socket) => {
         res.board = board;
         res.state = state;
         await storageHandler.set(tag, res);
-        const cleaned = boardClean.cleanToWeb(JSON.parse(JSON.stringify(board)));
+        const cleaned = boardClean.cleanToWeb(deepClone(board));
         const message = await getLinkObject(res.messageLink, client);
         res = await storageHandler.get(tag);
         discordSync.sp.updateBoard(message.message, res);
@@ -154,7 +154,7 @@ io.of('/sp').on('connection', (socket) => {
         res.board = board;
         res.state = state;
         await storageHandler.set(tag, res);
-        const cleaned = boardClean.cleanToWeb(JSON.parse(JSON.stringify(board)));
+        const cleaned = boardClean.cleanToWeb(deepClone(board));
         const message = await getLinkObject(res.messageLink, client);
         res = await storageHandler.get(tag);
         discordSync.sp.updateBoard(message.message, res);
@@ -173,7 +173,7 @@ io.of('/sp').on('connection', (socket) => {
             res.wins++;
         }
         await storageHandler.set(tag, res);
-        const cleaned = boardClean.cleanToWeb(JSON.parse(JSON.stringify(res.board)));
+        const cleaned = boardClean.cleanToWeb(deepClone(res.board));
         const message = await getLinkObject(res.messageLink, client);
         res = await storageHandler.get(tag);
         discordSync.sp.updateBoard(message.message, res);
