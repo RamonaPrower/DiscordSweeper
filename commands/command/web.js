@@ -54,7 +54,7 @@ module.exports = {
             wins: 0,
             loss: 0,
         };
-        storageHandler.set(genCode, store);
+        await storageHandler.set(genCode, store);
 	},
 };
 
