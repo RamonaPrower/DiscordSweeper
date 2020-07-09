@@ -1,6 +1,7 @@
 const moment = require('moment');
 const qdCache = require('qdcache');
 const { MongoBoard } = require('../../models/boardStore');
+const { deepClone } = require('../common');
 
 class storageHandler {
     constructor() {
@@ -12,7 +13,7 @@ class storageHandler {
             this._updateCache = new Map;
             this._updateCacheAction = setInterval(async () => {
                 await this._store();
-            }, 2000);
+            }, 1000);
             storageHandler.instance = this;
         }
         return storageHandler.instance;
@@ -30,7 +31,7 @@ class storageHandler {
         return store;
     }
     async set(tag, data) {
-        this._updateCache.set(tag, JSON.parse(JSON.stringify(data)));
+        this._updateCache.set(tag, deepClone(data));
         qdCache.set(tag, data);
         this._data.set(tag, new Date());
     }
