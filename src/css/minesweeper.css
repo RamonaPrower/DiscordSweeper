@@ -85,6 +85,9 @@ BODY {
     pointer-events: none;
     overflow: visible;
   }
+  #mine1 {
+    padding-top: 30px;
+  }
   #status {
     margin: 1%;
     font-size: 64px;

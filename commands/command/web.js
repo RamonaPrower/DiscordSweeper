@@ -33,7 +33,7 @@ module.exports = {
         }
         else {
             try {
-                await message.author.send(`random link is https://${process.env.SERVER_URL}/mine?h=${genCode}`);
+                await message.author.send(`link to the web is https://${process.env.SERVER_URL}/mine?h=${genCode}`);
             }
  catch (error) {
                 await message.channel.send('i need to be able to send you a DM for the link');
@@ -59,11 +59,11 @@ module.exports = {
 };
 
 module.exports.info = {
-	name: 'Test',
+	name: 'Web',
 	description: 'Test',
-	summon: 'Test',
+	summon: 'web',
 };
 module.exports.settings = {
-	regexp: /web/mi,
-	tag: 'test',
+	regexp: /\bweb\b/mi,
+	tag: 'web',
 };
