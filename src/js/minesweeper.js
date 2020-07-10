@@ -186,9 +186,10 @@ function updateGrid(board) {
     enableClicks();
     updateFlagCounter();
 }
+let leftButton = false;
+let rightButton = false;
 function enableClicks() {
-    let leftButton = false;
-    let rightButton = false;
+
 
     $('#grid:has(td)').mouseup(function(event) {
         const clickedCell = $(event.target).closest('td');
@@ -443,9 +444,16 @@ socket.on('error', (err) => {
 });
 
 socket.on('disconnect', (err) => {
+    $('#status').show();
+    $('#status').text('Reconnecting...');
+    blurGrid();
+    disableClicks();
     log('disconnect event fired, ' + err);
 });
 socket.on('reconnect', (attemptNumber) => {
+    $('#status').hide();
+    enableClicks();
+    unblurGrid();
     log('reconnect event fired, attempt ' + attemptNumber);
 });
 socket.on('reconnect_attempt', (attemptNumber) => {

@@ -1,13 +1,1 @@
-handle downtime/dropped connection on user end
-
-rewrite mouseclicks
-
-rewrite updating discord messages - will need second pass
-
 total boards won/lost
-
-info command
-
-front webpage
-
-burying
