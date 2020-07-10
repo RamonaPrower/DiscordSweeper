@@ -1,0 +1,3 @@
+{
+    "info": ["To generate a web board, use @DiscordSweeper web [easy, medium, hard]", "make sure that the bot can receive messages from you (either by allowing it on the server, or just sending a message to the bot first)", "once the link is clicked, the board will remain active for 30 minutes from your last action", "The github link for the code is https://github.com/RamonaPrower/DiscordSweeper", "if you run into any issues or have any questions, find me on twitter @sleepiestcloud"]
+}

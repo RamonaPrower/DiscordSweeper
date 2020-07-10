@@ -186,9 +186,10 @@ function updateGrid(board) {
     enableClicks();
     updateFlagCounter();
 }
+let leftButton = false;
+let rightButton = false;
 function enableClicks() {
-    let leftButton = false;
-    let rightButton = false;
+
 
     $('#grid:has(td)').mouseup(function(event) {
         const clickedCell = $(event.target).closest('td');
