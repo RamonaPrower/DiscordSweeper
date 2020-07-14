@@ -105,6 +105,12 @@ io.of('/sp').on('connection', (socket) => {
         const{ board, state } = minesweeperBoard.clickCellSafely(res.board, x, y, res.difficulty);
         res.board = board;
         res.state = state;
+        if (state === 'complete') {
+            infoBoard.addWin();
+        }
+        else if (state === 'failed') {
+            infoBoard.addLoss();
+        }
         await storageHandler.set(tag, res);
         const cleaned = boardClean.cleanToWeb(deepClone(board));
         const message = await getLinkObject(res.messageLink, client);
@@ -154,6 +160,12 @@ io.of('/sp').on('connection', (socket) => {
         }
         res.board = board;
         res.state = state;
+        if (state === 'complete') {
+            infoBoard.addWin();
+        }
+        else if (state === 'failed') {
+            infoBoard.addLoss();
+        }
         await storageHandler.set(tag, res);
         const cleaned = boardClean.cleanToWeb(deepClone(board));
         const message = await getLinkObject(res.messageLink, client);
@@ -169,11 +181,11 @@ io.of('/sp').on('connection', (socket) => {
         res.state = 'inProgress';
         if (state !== 'complete') {
             res.loss++;
-            infoBoard.addLoss();
+
         }
         else {
             res.wins++;
-            infoBoard.addWin();
+
         }
         await storageHandler.set(tag, res);
         const cleaned = boardClean.cleanToWeb(deepClone(res.board));
