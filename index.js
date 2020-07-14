@@ -91,17 +91,22 @@ io.of('/sp').on('connection', (socket) => {
     const tag = socket.handshake.query.tag;
     connectionCheck.set(tag);
     socket.on('getBoard', async (fn) => {
+        // get the board
         const res = await storageHandler.get(tag);
         if (!res) return;
-        // i have no idea what i'm doing
+        // clean it for the web
         const cleaned = boardClean.cleanToWeb(deepClone(res.board));
+        // send it back to the client
         fn(cleaned, res.state, res.mines);
     });
     socket.on('boardClick', async (x, y, fn) => {
+        // get the board
         let res = await storageHandler.get(tag);
+        // if it doesn't exist, or if it's already finished, reject it
         if (!res || res.state !== 'inProgress') {
             return;
         }
+        // click the cell, checking if it's the first hit
         const{ board, state } = minesweeperBoard.clickCellSafely(res.board, x, y, res.difficulty);
         res.board = board;
         res.state = state;
@@ -111,10 +116,17 @@ io.of('/sp').on('connection', (socket) => {
         else if (state === 'failed') {
             infoBoard.addLoss();
         }
+        // re-store it
         await storageHandler.set(tag, res);
+        // clean for the web
         const cleaned = boardClean.cleanToWeb(deepClone(board));
+        // get the message object
         const message = await getLinkObject(res.messageLink, client);
+        // reget the actual board
+        // this is mostly legacy code from when cleanToWeb mutated the board
+        // this SHOULDN'T be nessesary anymore but i'm scared to remove it
         res = await storageHandler.get(tag);
+        // send the board to the discord update queue
         discordSync.sp.updateBoard(message.message, res);
         fn(cleaned, state);
     });
@@ -181,11 +193,9 @@ io.of('/sp').on('connection', (socket) => {
         res.state = 'inProgress';
         if (state !== 'complete') {
             res.loss++;
-
         }
         else {
             res.wins++;
-
         }
         await storageHandler.set(tag, res);
         const cleaned = boardClean.cleanToWeb(deepClone(res.board));
