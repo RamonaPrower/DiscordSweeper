@@ -9,3 +9,8 @@ Will generate a board, send you a private message with the link to play mineswee
 
 This will be updated in real-time in discord! (or as real-time as discord's API allows it)!
 
+### info
+```
+@DiscordSweeper info || @DiscordSweeper help
+```
+This will show needed info, as well as global win/loss ratio.
