@@ -1,9 +1,13 @@
 // imports
 const strings = require('../../utils/strings.json');
+const { infoBoard } = require('../../models/infoStore');
 // exports
 module.exports = {
-	execute(message) {
-        message.channel.send(strings.info, { split: true });
+	async execute(message) {
+		const wins = await infoBoard.getWins();
+		const loss = await infoBoard.getLoss();
+		message.channel.send(strings.info, { split: true });
+		message.channel.send(`So far, there have been ${wins} wins and ${loss} losses globally`);
 	},
 };
 
@@ -13,6 +17,6 @@ module.exports.info = {
 	summon: 'info',
 };
 module.exports.settings = {
-	regexp: /\binfo\b/mi,
+	regexp: /(\bhelp\b|\binfo\b)/mi,
 	tag: 'info',
 };
