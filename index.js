@@ -24,6 +24,7 @@ const discordSync = require('./utils/discord/discordSync');
 const storageHandler = require('./utils/storage/storageHandler');
 const connectionCheck = require('./utils/security/connectionCheck');
 const mongoose = require('mongoose');
+const { infoBoard } = require('./models/infoStore');
 
 // start static distribution
 app.use(static('dist'));
@@ -168,9 +169,11 @@ io.of('/sp').on('connection', (socket) => {
         res.state = 'inProgress';
         if (state !== 'complete') {
             res.loss++;
+            infoBoard.addLoss();
         }
         else {
             res.wins++;
+            infoBoard.addWin();
         }
         await storageHandler.set(tag, res);
         const cleaned = boardClean.cleanToWeb(deepClone(res.board));
