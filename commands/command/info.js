@@ -13,6 +13,6 @@ module.exports.info = {
 	summon: 'info',
 };
 module.exports.settings = {
-	regexp: /\binfo\b/mi,
+	regexp: /(\bhelp\b|\binfo\b)/mi,
 	tag: 'info',
 };
