@@ -132,6 +132,7 @@ BODY {
   
   #grid TR TD{
     border:1px solid var(--gridBorder);
+    user-select: none;
     border-radius: 5px;
     background: var(--gridBackground);
     width: 40px;
@@ -174,6 +175,9 @@ BODY {
     right: 0px;
     margin: 15px;
     align-content: center;
+    display: flex;
+    flex-direction: row-reverse;
+
 
   }
 
@@ -181,6 +185,15 @@ BODY {
     display: none;
   }
 
+  .sounds input{
+    display: none;
+  }
+
+  #soundBoxImg {
+    font-size: 32px;
+    display: block;
+    padding-right: 15px;
+  }
   #checkBoxImg {
     font-size: 32px;
     display: block;
