@@ -1,4 +1,32 @@
-const { Howl } = require('howler');
+const { Howl, Howler } = require('howler');
+const toggle = document.querySelector('.sounds input');
+const toggleSpan = document.querySelector('#soundBoxImg');
+
+function switchVolume(tog) {
+    if (tog.target.checked) {
+        Howler.volume(0);
+        localStorage.setItem('sound', 'muted');
+        toggleSpan.innerHTML = '<i class="fas fa-volume-mute"></i>';
+    }
+    else {
+        Howler.volume(1);
+        localStorage.setItem('sound', 'loud');
+        toggleSpan.innerHTML = '<i class="fas fa-volume-up"></i>';
+    }
+}
+toggle.addEventListener('change', switchVolume, false);
+const currentSound = localStorage.getItem('sound') ? localStorage.getItem('sound') : 'loud';
+if (currentSound) {
+    if (currentSound === 'muted') {
+        Howler.volume(0);
+        toggleSpan.innerHTML = '<i class="fas fa-volume-mute"></i>';
+    }
+    else {
+        Howler.volume(100);
+        toggleSpan.innerHTML = '<i class="fas fa-volume-up"></i>';
+    }
+}
+
 const flip = new Howl({
     src: ['/sounds/click.wav'],
     volume: 0.3,
