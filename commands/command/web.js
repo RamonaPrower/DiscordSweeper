@@ -12,12 +12,12 @@ module.exports = {
         let board;
         let difficulty;
         let mines;
-        if (message.content.endsWith('easy')) {
+        if (message.content.endsWith('easy') || message.content.endsWith('small')) {
             board = MinesweeperBoard.generate('easy');
             difficulty = 'easy';
             mines = difficulties.easy.mines;
         }
-        else if (message.content.endsWith('hard')) {
+        else if (message.content.endsWith('hard') || message.content.endsWith('large')) {
             board = MinesweeperBoard.generate('hard');
             difficulty = 'hard';
             mines = difficulties.hard.mines;
