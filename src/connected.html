@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ <!-- Global site tag (gtag.js) - Google Analytics -->
+ <script async src="https://www.googletagmanager.com/gtag/js?id=UA-171571767-1"></script>
+ <script>
+     window.dataLayer = window.dataLayer || [];
+     function gtag() { dataLayer.push(arguments); }
+     gtag('js', new Date());
+
+     gtag('config', 'UA-171571767-1');
+ </script>
+
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <link rel="stylesheet" href="/css/minesweeper.css">
+ <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@500&display=swap" rel="stylesheet">
+    <title>Homepage</title>
+</head>
+<body>
+    <div id="themeContainer">
+        <label class="theme">
+            <input type="checkbox" name="theme" id="darkCheck" />
+            <span id="checkBoxImg"></span>
+        </label>
+
+    </div>
+    <h1 style="font-size: 72px;">Already Connected!</h1>
+    <div>
+        <div id="container">
+            <p>We've detected another connection for this board already in play.</p>
+            <p>This can also happen if you refresh the page, and your internet connection is too fast.</p>
+            <p style="font-size: 10px">showoff.</p>
+            <p>If you don't have it open in another tab, give the page a refresh and you should be back and running.</p>
+        </div>
+        <div id="container" style="padding-top: 20px">
+            <div class="containerContent">
+                <button id=newBoardButton onClick="window.location.reload();">Refresh the page</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/theme.js"></script>
+</body>
+</html>
