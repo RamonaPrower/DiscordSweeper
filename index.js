@@ -62,6 +62,9 @@ app.get('/', (req, res) => {
 });
 
 app.get('/mine', async (req, res) => {
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
     const game = await storageHandler.get(req.query.h);
     if (!game) {
         res.sendFile(__dirname + '/dist/index.html');
