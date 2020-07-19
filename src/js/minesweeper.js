@@ -36,28 +36,32 @@ setInterval(function() {
     socket.emit('keepAlive');
 }, 5000);
 
-socket.emit('getBoard', (board, state, mines) => {
-    publicBoard = board;
-    globalState = state;
-    initialMines(mines);
-    if (state === 'inProgress') {
-        generateGrid(board);
-    }
-    else if (state === 'failed') {
-        generateGrid(board);
-        blurGrid();
-        timer.stop();
-        disableClicks();
-        showFailStatus();
-    }
-    else {
-        generateGrid(board);
-        blurGrid();
-        disableClicks();
-        timer.stop();
-        showWinStatus();
-    }
-});
+function getBoard() {
+    socket.emit('getBoard', (board, state, mines) => {
+        publicBoard = board;
+        globalState = state;
+        initialMines(mines);
+        if (state === 'inProgress') {
+            generateGrid(board);
+        }
+        else if (state === 'failed') {
+            generateGrid(board);
+            blurGrid();
+            timer.stop();
+            disableClicks();
+            showFailStatus();
+        }
+        else {
+            generateGrid(board);
+            blurGrid();
+            disableClicks();
+            timer.stop();
+            showWinStatus();
+        }
+    });
+}
+
+getBoard();
 
 function generateGrid(board) {
     timer.reset();
@@ -73,7 +77,13 @@ function generateGrid(board) {
                 cell.className = 'clicked';
             }
             else if (board[i][j].revealed === true && board[i][j].mine === true) {
-                cell.className = 'mine';
+                if (globalState === 'complete') {
+                    cell.className = 'mineGood';
+                }
+                else {
+                    cell.className = 'mine';
+                }
+
             }
             else if (board[i][j].revealed === false && board[i][j].flagged === true) {
                 flagCounter++;
@@ -122,15 +132,15 @@ function updateGrid(board) {
                 }
             }
             else if (board[i][j].revealed === true && board[i][j].mine === true) {
-                if (cell.className == '') {
-                    cell.className = 'half';
-                    setTimeout(() => {
-                        cell.className = 'mine';
-                    }, 65);
+                if (globalState === 'complete') {
+                    cell.className = 'mineGood';
                 }
                 else {
-                    cell.className = 'mine';
-                }
+                        cell.className = 'half';
+                        setTimeout(() => {
+                            cell.className = 'mine';
+                        }, 65);
+                    }
 
             }
             else if (board[i][j].revealed === false && board[i][j].flagged === true) {
@@ -284,17 +294,17 @@ function enableClicks() {
         // this stops that (hopefully);
         if (clickedCell.length === 0) return;
         if (clickedCell[0].innerHTML == '') {
-                    flagCell(clickedCell[0].parentNode.rowIndex, clickedCell[0].cellIndex);
-                    return;
-            }
+            flagCell(clickedCell[0].parentNode.rowIndex, clickedCell[0].cellIndex);
+            return;
+        }
         // if cell is flagged
         else if (clickedCell[0].innerHTML == '🚩') {
-                    questionCell(clickedCell[0].parentNode.rowIndex, clickedCell[0].cellIndex);
-                    return;
+            questionCell(clickedCell[0].parentNode.rowIndex, clickedCell[0].cellIndex);
+            return;
         }
         else if (clickedCell[0].innerHTML == '❓') {
-                    questionCell(clickedCell[0].parentNode.rowIndex, clickedCell[0].cellIndex);
-                    return;
+            questionCell(clickedCell[0].parentNode.rowIndex, clickedCell[0].cellIndex);
+            return;
         }
         else {
             chordCell(clickedCell[0].parentNode.rowIndex, clickedCell[0].cellIndex);
@@ -427,6 +437,10 @@ function log(str) {
     console.log(str);
 }
 
+$('#status').bind('contextmenu', function() {
+    return false;
+});
+
 socket.on('connect', () => {
     log('connection event fired');
 });
@@ -441,6 +455,7 @@ socket.on('connect_timeout', (err) => {
 
 socket.on('error', (err) => {
     log('error event fired, ' + err);
+    window.location.reload();
 });
 
 socket.on('disconnect', (err) => {
@@ -454,6 +469,7 @@ socket.on('reconnect', (attemptNumber) => {
     $('#status').hide();
     enableClicks();
     unblurGrid();
+    getBoard();
     log('reconnect event fired, attempt ' + attemptNumber);
 });
 socket.on('reconnect_attempt', (attemptNumber) => {
