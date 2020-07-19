@@ -44,7 +44,7 @@ module.exports = {
         }
         return message;
     },
-    parseFromWebToMessage(board) {
+    parseFromWebToMessage(board, state) {
         const message = [];
         for (const row of board) {
             let rowMessage = '';
@@ -59,7 +59,13 @@ module.exports = {
                     rowMessage = rowMessage + '❓';
                 }
                 else if (entry.mine === true && entry.revealed === true) {
-                    rowMessage = rowMessage + '💥';
+                    if (state === 'complete') {
+                        rowMessage = rowMessage + '🚩';
+                    }
+                    else {
+                        rowMessage = rowMessage + '💥';
+                    }
+
                 }
                 else if (entry.mine === false && entry.revealed === true) {
 

@@ -15,6 +15,7 @@
   --gridBackgroundMine: #ff0000;
   --gridBackgroundFlag: #d39000;
   --gridBackgroundQuestion: #0dff9a;
+  --gridBackgroundMineGood: #0dff9a;
 
 }
 
@@ -33,6 +34,7 @@
   --gridBackgroundMine: #ff0000;
   --gridBackgroundFlag: #B58112;
   --gridBackgroundQuestion: #0bad6a;
+  --gridBackgroundMineGood: #0bad6a;
 }
 
 BODY {
@@ -92,9 +94,10 @@ BODY {
     margin: 1%;
     font-size: 64px;
     position: absolute;
+    user-select: none;
     width: 98%;
     top: 40vh;
-    overflow: hidden;
+    overflow: unset;
     z-index: 3;
     color: var(--status-font);
     text-shadow: var(--status-shadow);
@@ -157,6 +160,10 @@ BODY {
   
   #grid TR TD.mine {
       background: var(--gridBackgroundMine);
+      transform: rotateY(0deg);
+  }
+  #grid TR TD.mineGood {
+    background: var(--gridBackgroundMineGood);
       transform: rotateY(0deg);
   }
   

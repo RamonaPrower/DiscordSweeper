@@ -62,6 +62,9 @@ app.get('/', (req, res) => {
 });
 
 app.get('/mine', async (req, res) => {
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
     const game = await storageHandler.get(req.query.h);
     if (!game) {
         res.sendFile(__dirname + '/dist/index.html');
@@ -69,7 +72,7 @@ app.get('/mine', async (req, res) => {
     }
     const connected = connectionCheck.get(req.query.h);
     if (connected) {
-        res.sendFile(__dirname + '/dist/index.html');
+        res.sendFile(__dirname + '/dist/connected.html');
         return;
     }
     res.sendFile(__dirname + '/dist/mine.html');
@@ -83,6 +86,15 @@ io.use((socket, next) => {
     const check = connectionCheck.get(token);
     if (check) {
        return next(new Error ('board already connected'));
+    }
+    return next();
+});
+
+io.use(async (socket, next) => {
+    const token = socket.handshake.query.tag;
+    const res = await storageHandler.get(token);
+    if (!res) {
+        return next(new Error('board not found'));
     }
     return next();
 });
