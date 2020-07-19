@@ -455,7 +455,9 @@ socket.on('connect_timeout', (err) => {
 
 socket.on('error', (err) => {
     log('error event fired, ' + err);
-    window.location.reload();
+    setTimeout(() => {
+        window.location.reload();
+    }, 100);
 });
 
 socket.on('disconnect', (err) => {
