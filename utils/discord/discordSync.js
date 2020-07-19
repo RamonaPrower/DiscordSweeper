@@ -13,7 +13,7 @@ setInterval(async function() {
 }, 1000);
 
 async function messageUpdate(message, res) {
-    const result = parseFromWebToMessage(res.board);
+    const result = parseFromWebToMessage(res.board, res.state);
     if (res.state === 'complete') { result.push(`${res.user} has won!`); }
     else if (res.state === 'failed') { result.push(`${res.user} has failed!`); }
     else { result.push(`board generated for ${res.user}`); }
