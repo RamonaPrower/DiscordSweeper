@@ -108,8 +108,15 @@ io.of('/sp').on('connection', (socket) => {
         if (!res) return;
         // clean it for the web
         const cleaned = boardClean.cleanToWeb(deepClone(res.board));
+        let timeElapsed = 0;
+        if (res.time === 0) {
+            timeElapsed = 0;
+        }
+        else {
+            timeElapsed = Date.now() - res.time;
+        }
         // send it back to the client
-        fn(cleaned, res.state, res.mines);
+        fn(cleaned, res.state, res.mines, timeElapsed);
     });
     socket.on('boardClick', async (x, y, fn) => {
         // get the board
@@ -119,7 +126,7 @@ io.of('/sp').on('connection', (socket) => {
             return;
         }
         // click the cell, checking if it's the first hit
-        const{ board, state } = minesweeperBoard.clickCellSafely(res.board, x, y, res.difficulty);
+        const{ board, state, firstClicked } = minesweeperBoard.clickCellSafely(res.board, x, y, res.difficulty);
         res.board = board;
         res.state = state;
         if (state === 'complete') {
@@ -127,6 +134,10 @@ io.of('/sp').on('connection', (socket) => {
         }
         else if (state === 'failed') {
             infoBoard.addLoss();
+        }
+        if (firstClicked === true) {
+            console.log('firstclick');
+            res.time = Date.now();
         }
         // re-store it
         await storageHandler.set(tag, res);
@@ -140,7 +151,9 @@ io.of('/sp').on('connection', (socket) => {
         res = await storageHandler.get(tag);
         // send the board to the discord update queue
         discordSync.sp.updateBoard(message.message, res);
-        fn(cleaned, state);
+        const ms = Date.now() - res.time;
+        console.log(`time sent from server is ${ms}`);
+        fn(cleaned, state, ms);
     });
     socket.on('flagClick', async (x, y, fn) => {
         let res = await storageHandler.get(tag);
@@ -195,7 +208,8 @@ io.of('/sp').on('connection', (socket) => {
         const message = await getLinkObject(res.messageLink, client);
         res = await storageHandler.get(tag);
         discordSync.sp.updateBoard(message.message, res);
-        fn(cleaned, state, valid);
+        const ms = Date.now() - res.time;
+        fn(cleaned, state, valid, ms);
     });
     socket.on('newBoard', async (state, fn) => {
         let res = await storageHandler.get(tag);
