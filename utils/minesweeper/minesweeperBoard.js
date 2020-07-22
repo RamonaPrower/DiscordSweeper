@@ -153,12 +153,12 @@ module.exports = {
         }
         if (firstClicked === false) {
             const { board, state } = this.clickCell(oldBoard, inputRow, inputCol);
-            return { board, state };
+            return { board, state, firstClicked };
         }
         while (safeBoard === false) {
             const { board, state } = this.clickCell(oldBoard, inputRow, inputCol);
             if (state === 'inProgress') {
-                return { board, state };
+                return { board, state, firstClicked };
             }
             else {
                 oldBoard = this.generate(difficulty);

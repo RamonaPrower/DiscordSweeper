@@ -53,6 +53,7 @@ module.exports = {
             difficulty,
             wins: 0,
             loss: 0,
+            time: 0,
         };
         await storageHandler.set(genCode, store);
 	},

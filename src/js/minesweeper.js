@@ -2,9 +2,9 @@
 const io = require('socket.io-client');
 window.$ = require('jquery');
 const { confetti } = require('dom-confetti');
-const { DuckTimer } = require('duck-timer');
+const timeManager = require('./timer');
 const { flip, bell, boom, victory, error, question } = require('./sounds');
-const timer = new DuckTimer({ interval: 1000 });
+
 
 // setup
 
@@ -25,6 +25,7 @@ const config = {
 let publicBoard;
 let globalState;
 let flagCounter;
+let globalTime;
 const params = new URLSearchParams(document.location.search.substring(1));
 const tag = params.get('h');
 const socket = io(`/sp?tag=${tag}`);
@@ -37,17 +38,19 @@ setInterval(function() {
 }, 5000);
 
 function getBoard() {
-    socket.emit('getBoard', (board, state, mines) => {
+    socket.emit('getBoard', (board, state, mines, timeElapsed) => {
         publicBoard = board;
         globalState = state;
+        globalTime = timeElapsed;
         initialMines(mines);
         if (state === 'inProgress') {
+            timeManager.init(globalTime);
             generateGrid(board);
         }
         else if (state === 'failed') {
             generateGrid(board);
             blurGrid();
-            timer.stop();
+            timeManager.stop();
             disableClicks();
             showFailStatus();
         }
@@ -55,7 +58,7 @@ function getBoard() {
             generateGrid(board);
             blurGrid();
             disableClicks();
-            timer.stop();
+            timeManager.stop();
             showWinStatus();
         }
     });
@@ -64,7 +67,6 @@ function getBoard() {
 getBoard();
 
 function generateGrid(board) {
-    timer.reset();
     clearStatus();
     grid.innerHTML = '';
     flagCounter = 0;
@@ -96,16 +98,6 @@ function generateGrid(board) {
             }
         }
     }
-    timer.onInterval(res => {
-        let minCount = 0;
-        if (res.minutes > 0) {
-            minCount = res.minutes;
-        }
-        let calcSecs = res.seconds - (minCount * 60);
-        if (calcSecs < 10) calcSecs = '0' + calcSecs;
-        const str = `Timer: ${minCount}:${calcSecs}`;
-        $('#timer').text(str);
-    }).start();
     enableClicks();
     updateFlagCounter();
 }
@@ -192,7 +184,6 @@ function updateGrid(board) {
             }, 45);
         })(flips);
     }
-
     enableClicks();
     updateFlagCounter();
 }
@@ -320,8 +311,10 @@ function disableClicks() {
 }
 function clickCell(x, y) {
     disableClicks();
-    socket.emit('boardClick', x, y, (board, state) => {
+    socket.emit('boardClick', x, y, (board, state, ms) => {
+        globalTime = ms;
         globalState = state;
+        timeManager.update(globalTime);
         if (state === 'inProgress') {
             updateGrid(board);
         }
@@ -330,7 +323,7 @@ function clickCell(x, y) {
             generateGrid(board);
             disableClicks();
             blurGrid();
-            timer.stop();
+            timeManager.stop();
             showFailStatus();
         }
         else {
@@ -340,7 +333,7 @@ function clickCell(x, y) {
             victory.play();
             disableClicks();
             blurGrid();
-            timer.stop();
+            timeManager.stop();
             showWinStatus();
         }
     });
@@ -360,8 +353,10 @@ function questionCell(x, y) {
 }
 function chordCell(x, y) {
     disableClicks();
-    socket.emit('chordClick', x, y, (board, state, valid) => {
+    socket.emit('chordClick', x, y, (board, state, valid, ms) => {
         globalState = state;
+        globalTime = ms;
+        timeManager.update(globalTime);
         if (valid === true) {
             if (state === 'inProgress') {
                 updateGrid(board);
@@ -371,7 +366,7 @@ function chordCell(x, y) {
                 generateGrid(board);
                 disableClicks();
                 blurGrid();
-                timer.stop();
+                timeManager.stop();
                 showFailStatus();
             }
             else {
@@ -381,7 +376,7 @@ function chordCell(x, y) {
                 victory.play();
                 disableClicks();
                 blurGrid();
-                timer.stop();
+                timeManager.stop();
                 showWinStatus();
             }
         }
@@ -402,6 +397,7 @@ function chordCell(x, y) {
 function newBoard() {
     disableClicks();
     socket.emit('newBoard', globalState, (board) => {
+        timeManager.init();
         unblurGrid();
         generateGrid(board);
     });

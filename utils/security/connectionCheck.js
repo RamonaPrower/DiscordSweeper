@@ -30,7 +30,6 @@ class connectionChecker {
             const time = moment().diff(lastUpdated, 'seconds');
             if (time >= 30) {
                 this._gameStore.delete(id);
-                console.log(`deleted ${id} board from board cache`);
             }
         });
     }
