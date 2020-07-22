@@ -42,20 +42,41 @@ module.exports = {
 
         }
         const toSendMessage = minesweeperDiscord.parseFromWebToMessage(board);
-        toSendMessage.push(`board generated for ${message.member.displayName}`);
-        const sentMessage = await message.channel.send(toSendMessage);
-        const store = {
-            messageLink: sentMessage.url,
-            board,
-            mines,
-            user: message.member.displayName,
-            state: 'inProgress',
-            difficulty,
-            wins: 0,
-            loss: 0,
-            time: 0,
-        };
-        await storageHandler.set(genCode, store);
+
+        let sentMessage;
+        if (message.channel.type === 'dm') {
+            toSendMessage.push(`board generated for ${message.author.username}`);
+            sentMessage = await message.author.send(toSendMessage);
+            const store = {
+                messageLink: sentMessage.url,
+                board,
+                mines,
+                user: message.author.username,
+                state: 'inProgress',
+                difficulty,
+                wins: 0,
+                loss: 0,
+                time: 0,
+            };
+            await storageHandler.set(genCode, store);
+        }
+        else {
+            toSendMessage.push(`board generated for ${message.member.displayName}`);
+            sentMessage = await message.channel.send(toSendMessage);
+            const store = {
+                messageLink: sentMessage.url,
+                board,
+                mines,
+                user: message.member.displayName,
+                state: 'inProgress',
+                difficulty,
+                wins: 0,
+                loss: 0,
+                time: 0,
+            };
+            await storageHandler.set(genCode, store);
+        }
+
 	},
 };
 
