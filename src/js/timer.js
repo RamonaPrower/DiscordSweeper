@@ -12,7 +12,6 @@ let timer;
 module.exports = {
     init: function(ms) {
         const updateTime = !ms ? 0 : JSON.parse(JSON.stringify(ms));
-        console.log(`updateTime is ${updateTime}`);
         timer = new DuckTimer({ setTime: updateTime });
         const actualTime = timer.getClock();
         const minCount = actualTime.minutes;
@@ -30,7 +29,6 @@ module.exports = {
             if (intcalcSecs < 10) intcalcSecs = '0' + intcalcSecs;
             const newStr = `Timer: ${intminCount}:${intcalcSecs}`;
             $('#timer').text(newStr);
-            console.log('ticking from start');
         }, 1000);
         if (updateTime !== 0) {
             timer.start();
@@ -46,11 +44,9 @@ module.exports = {
     },
     update: function(ms) {
         const updateTime = !ms ? timer.time : JSON.parse(JSON.stringify(ms));
-        console.log(`updateTime is ${updateTime}`);
         timer.stop();
         timer = null;
         timer = new DuckTimer({ setTime: updateTime });
-        console.log(`${timer.time} is current time on DT`);
         timer.start();
     },
     stop: function(ms) {

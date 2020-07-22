@@ -136,7 +136,6 @@ io.of('/sp').on('connection', (socket) => {
             infoBoard.addLoss();
         }
         if (firstClicked === true) {
-            console.log('firstclick');
             res.time = Date.now();
         }
         // re-store it
@@ -152,7 +151,6 @@ io.of('/sp').on('connection', (socket) => {
         // send the board to the discord update queue
         discordSync.sp.updateBoard(message.message, res);
         const ms = Date.now() - res.time;
-        console.log(`time sent from server is ${ms}`);
         fn(cleaned, state, ms);
     });
     socket.on('flagClick', async (x, y, fn) => {

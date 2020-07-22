@@ -42,7 +42,6 @@ class storageHandler {
                 this._data.delete(key);
                 qdCache.delete(key);
                 await MongoBoard.deleteOne({ tag: key });
-                console.log(`deleted session ${key} from connection cache`);
             }
         });
     }
