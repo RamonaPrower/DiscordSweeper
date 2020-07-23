@@ -25,6 +25,7 @@ const storageHandler = require('./utils/storage/storageHandler');
 const connectionCheck = require('./utils/security/connectionCheck');
 const mongoose = require('mongoose');
 const { infoBoard } = require('./models/infoStore');
+const { HighScoreModel } = require('./models/highScoreStore');
 
 // start static distribution
 app.use(static('dist'));
@@ -129,6 +130,7 @@ io.of('/sp').on('connection', (socket) => {
         const{ board, state, firstClicked } = minesweeperBoard.clickCellSafely(res.board, x, y, res.difficulty);
         res.board = board;
         res.state = state;
+        const ms = Date.now() - res.time;
         if (state === 'complete') {
             infoBoard.addWin();
         }
@@ -150,7 +152,7 @@ io.of('/sp').on('connection', (socket) => {
         res = await storageHandler.get(tag);
         // send the board to the discord update queue
         discordSync.sp.updateBoard(message.message, res);
-        const ms = Date.now() - res.time;
+        
         fn(cleaned, state, ms);
     });
     socket.on('flagClick', async (x, y, fn) => {
