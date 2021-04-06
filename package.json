@@ -1,6 +1,6 @@
 {
   "name": "minesweeper-bot",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Minesweeper Discord Bot",
   "main": "index.js",
   "scripts": {
@@ -13,22 +13,22 @@
   "author": "Ramona Prower",
   "license": "ISC",
   "dependencies": {
-    "@fortawesome/fontawesome-free": "^5.13.1",
-    "discord.js": "^12.0.1",
+    "@fortawesome/fontawesome-free": "^5.15.3",
+    "discord.js": "^12.5.3",
     "dom-confetti": "^0.2.2",
     "duck-timer": "^1.0.2",
     "express": "^4.17.1",
-    "howler": "^2.2.0",
-    "jquery": "^3.5.1",
-    "long-press-event": "^2.2.2",
-    "moment": "^2.27.0",
-    "mongoose": "^5.9.22",
-    "nanoid": "^3.1.10",
+    "howler": "^2.2.1",
+    "jquery": "^3.6.0",
+    "long-press-event": "^2.4.2",
+    "moment": "^2.29.1",
+    "mongoose": "^5.12.3",
+    "nanoid": "^3.1.22",
     "qdcache": "^1.0.2",
-    "socket.io": "^2.3.0"
+    "socket.io": "^2.4.1"
   },
   "devDependencies": {
-    "parcel-bundler": "^1.12.4",
-    "parcel-plugin-static-files-copy": "^2.4.3"
+    "parcel-bundler": "^1.12.5",
+    "parcel-plugin-static-files-copy": "^2.6.0"
   }
 }
