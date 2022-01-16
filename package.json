@@ -2,7 +2,11 @@
   "name": "minesweeper-bot",
   "version": "1.0.2",
   "description": "Minesweeper Discord Bot",
+  "browserslist": "defaults",
   "main": "index.js",
+  "targets": {
+    "main": false
+  },
   "scripts": {
     "webwatch": "parcel watch src/*.html",
     "webbuild": "parcel build src/*.html",
@@ -22,13 +26,17 @@
     "jquery": "^3.6.0",
     "long-press-event": "^2.4.2",
     "moment": "^2.29.1",
-    "mongoose": "^5.12.3",
+    "mongoose": "^6.1.6",
     "nanoid": "^3.1.22",
     "qdcache": "^1.0.2",
     "socket.io": "^2.4.1"
   },
   "devDependencies": {
-    "parcel-bundler": "^1.12.5",
-    "parcel-plugin-static-files-copy": "^2.6.0"
+    "@parcel/config-default": "^2.2.0",
+    "@parcel/packager-raw-url": "^2.2.0",
+    "@parcel/transformer-raw": "^2.2.0",
+    "@parcel/transformer-webmanifest": "^2.2.0",
+    "parcel": "^2.2.0",
+    "parcel-reporter-static-files-copy": "^1.3.4"
   }
 }

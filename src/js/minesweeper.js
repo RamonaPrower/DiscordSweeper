@@ -18,7 +18,7 @@ const config = {
     stagger: '3',
     width: '20px',
     height: '20px',
-    perspective: '0px',
+    perspective: '900px',
     colors: ['#a864fd', '#29cdff', '#78ff44', '#ff718d', '#fdff6a'],
 };
 
@@ -313,15 +313,18 @@ function disableClicks() {
 function detectShift() {
     $('*').keydown(event => {
         if (event.code == 'ShiftLeft') {
-            console.log('shift left down');
+            // console.log('shift left down');
             leftShift = true;
         }
     });
     $('*').keyup(event => {
         if (event.code == 'ShiftLeft') {
-            console.log('shift left up');
+            // console.log('shift left up');
             leftShift = false;
         }
+        // else if (event.code == 'KeyU') {
+        //     makeConfetti();
+        // }
     });
 }
 detectShift();

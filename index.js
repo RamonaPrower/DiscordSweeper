@@ -152,7 +152,7 @@ io.of('/sp').on('connection', (socket) => {
         res = await storageHandler.get(tag);
         // send the board to the discord update queue
         discordSync.sp.updateBoard(message.message, res);
-        
+
         fn(cleaned, state, ms);
     });
     socket.on('flagClick', async (x, y, fn) => {
@@ -255,7 +255,7 @@ client.on('ready', () => {
     else {
         db = config.db;
     }
-    mongoose.connect(db, ({ useNewUrlParser: true, useUnifiedTopology: true }))
+    mongoose.connect(db)
     .then(() => {
         console.log('Connection to MongoDB successfully established');
     })
