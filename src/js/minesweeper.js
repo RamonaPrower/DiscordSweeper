@@ -18,7 +18,7 @@ const config = {
     stagger: '3',
     width: '20px',
     height: '20px',
-    perspective: '0px',
+    perspective: '900px',
     colors: ['#a864fd', '#29cdff', '#78ff44', '#ff718d', '#fdff6a'],
 };
 
@@ -128,11 +128,11 @@ function updateGrid(board) {
                     cell.className = 'mineGood';
                 }
                 else {
-                        cell.className = 'half';
-                        setTimeout(() => {
-                            cell.className = 'mine';
-                        }, 65);
-                    }
+                    cell.className = 'half';
+                    setTimeout(() => {
+                        cell.className = 'mine';
+                    }, 65);
+                }
 
             }
             else if (board[i][j].revealed === false && board[i][j].flagged === true) {
@@ -189,6 +189,7 @@ function updateGrid(board) {
 }
 let leftButton = false;
 let rightButton = false;
+let leftShift = false;
 function enableClicks() {
 
 
@@ -251,7 +252,7 @@ function enableClicks() {
         // errors flood the console if the user clicks *just* outside of a cell
         // this stops that (hopefully);
         if (clickedCell.length === 0) return;
-        if (clickedCell[0].className == 'clicked' && rightButton === false) {
+        if (clickedCell[0].className == 'clicked' && rightButton === false && leftShift === false) {
             switch (event.which) {
                 case 1:
                     // left
@@ -266,7 +267,7 @@ function enableClicks() {
                     break;
             }
         }
-        else if (clickedCell[0].className === 'clicked' && rightButton === true) {
+        else if (clickedCell[0].className === 'clicked' && rightButton === true || clickedCell[0].className === 'clicked' && leftShift === true) {
             switch (event.which) {
                 case 1:
                     // left
@@ -309,6 +310,24 @@ function disableClicks() {
     $('#grid:has(td)').css;
     $('#grid:has(td)').off('long-press');
 }
+function detectShift() {
+    $('*').keydown(event => {
+        if (event.code == 'ShiftLeft') {
+            // console.log('shift left down');
+            leftShift = true;
+        }
+    });
+    $('*').keyup(event => {
+        if (event.code == 'ShiftLeft') {
+            // console.log('shift left up');
+            leftShift = false;
+        }
+        // else if (event.code == 'KeyU') {
+        //     makeConfetti();
+        // }
+    });
+}
+detectShift();
 function clickCell(x, y) {
     disableClicks();
     socket.emit('boardClick', x, y, (board, state, ms) => {
