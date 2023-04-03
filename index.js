@@ -15,7 +15,11 @@ const commandList = require('./commands/command');
 
 const app = require('express')();
 const http = require('http').createServer(app);
-const io = require('socket.io')(http);
+const { Server } = require('socket.io');
+const io = new Server(http, {
+    origins:['http://localhost:3000', 'https://ms-stage.pupy.plus', 'https://ms.pupy.plus'],
+    allowEIO3: true,
+});
 const { static } = require('express');
 const boardClean = require('./utils/security/boardClean');
 const minesweeperBoard = require('./utils/minesweeper/minesweeperBoard');
@@ -25,7 +29,6 @@ const storageHandler = require('./utils/storage/storageHandler');
 const connectionCheck = require('./utils/security/connectionCheck');
 const mongoose = require('mongoose');
 const { infoBoard } = require('./models/infoStore');
-const { HighScoreModel } = require('./models/highScoreStore');
 
 // start static distribution
 app.use(static('dist'));
